@@ -8,6 +8,7 @@
 # testing
 /coverage
 
+.env.local
 # next.js
 /.next/
 /out/
@@ -30,3 +31,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

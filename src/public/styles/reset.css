@@ -1,0 +1,219 @@
+/* 메인페이지 폰트 */
+@font-face {
+  font-family: 'Pretendard-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'SUIT-Medium';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Medium.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Cute+Font&family=Dongle&family=East+Sea+Dokdo&family=Gamja+Flower&family=Gothic+A1&family=Jua&family=Nanum+Gothic&family=Nanum+Pen+Script&family=Noto+Sans+KR&display=swap');
+
+
+@font-face {
+    font-family: 'Jua';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ghanachoco';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ghanachoco.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp, 
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, button {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+	font-family: 'SUIT-Medium', 'Pretendard-Regular', -apple-system, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+html, body{
+	height: 100%;
+}
+#__next{
+	height: 100%;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none ;
+}
+li{ list-style: none;}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+a {
+	text-decoration: none;
+}
+
+
+
+  .ql-hidden{
+    display:none;
+  }
+.ql-editor strong{
+     font-weight:bold;
+ }
+.ql-editor{
+  font-family:'Pretendard-Regular','Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+.ql-editor em{
+  font-style:italic;
+}
+.ql-editor blockquote{
+  border-left: 4px solid #ccc;
+  margin-bottom: 5px !important;
+  margin-top: 5px !important;
+  padding-left: 16px !important;
+}
+.ql-editor a{
+  text-decoration: underline;
+  color: #06c;
+}
+
+.ql-editor img{
+	height: auto;
+}
+
+.ql-.ql-blank{
+  min-height: 100px !important;
+}
+
+.test{
+  width: 500px;
+}
+
+.ql-clipboard{
+  display: none;
+}
+
+.quill{
+  width: 100%;
+}
+/* .quill img{
+  width: 100%;
+} */
+.quill iframe{
+  width: 95%;
+  max-width: 300px;
+}
+
+/*커스텀 폰트*/
+
+.ql-picker.ql-font .ql-picker-item::before {
+  content: attr(data-value) !important;
+  font-size: 14px;
+}
+
+.ql-picker.ql-font .ql-picker-label::before {
+  content: attr(data-value) !important;
+  font-size: 14px;
+}
+
+.ql-font-맑은고딕{
+  font-family: 'Gothic A1', sans-serif !important;
+}
+
+.ql-font-본고딕{
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+.ql-font-나눔고딕{
+  font-family: 'Nanum Gothic', sans-serif !important;
+}
+.ql-font-주아체{
+  font-family: 'Jua', sans-serif !important;
+}
+.ql-font-나눔글씨체{
+  font-family: 'Nanum Pen Script', cursive !important;
+}
+.ql-font-검은고딕{
+  font-family: 'Black Han Sans', sans-serif !important;
+}
+.ql-font-여기어때잘난체{
+  font-family: 'Jua', sans-serif !important;
+}
+.ql-font-가나초콜릿체{
+  font-family: 'ghanachoco', sans-serif !important;
+}
+.ql-font-동해독도체{
+  font-family: 'East Sea Dokdo', cursive !important;
+}
+.ql-font-동글체{
+  font-family: 'Dongle', sans-serif !important;
+}
+.ql-font-귀욤체{
+  font-family: 'Cute Font', cursive !important;
+}
+.ql-font-감자꽃마을{
+  font-family: 'Gamja Flower', cursive !important;
+}
+
+
+.MuiButtonBase-root{
+  /* font-family: 'Jua', sans-serif !important; */
+  font-family: 'Noto Sans KR', sans-serif !important;
+  font-weight: bold !important;
+}
+.news_container .MuiButtonBase-root{
+  font-family: 'Noto Sans KR', sans-serif !important;
+  font-weight: bold;
+}
+
+
+
+/* speedDial color/ */
+.css-118zhtq-MuiButtonBase-root-MuiFab-root-MuiSpeedDial-fab{
+  background-color: #956cd6 !important;
+}
+.css-1fgwdvu-MuiSpeedDialAction-staticTooltip .MuiSpeedDialAction-staticTooltipLabel{
+  color: #814ad8;
+  width: max-content !important;
+}
+
+/* bottom navi */
+.css-1bjk3jo-MuiButtonBase-root-MuiBottomNavigationAction-root.Mui-selected{
+  color: #814ad8 !important;
+}
+.css-imwso6-MuiBottomNavigationAction-label.Mui-selected{
+  font-size: 13px !important;
+}
+
+
