@@ -9,14 +9,18 @@ import { TempleBuddhist } from "mdi-material-ui"
 import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Tooltip from '@mui/material/Tooltip';
+import History from "./History"
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 
 const ProgramInfo = ({subContent}) => {
-  const {teamId, setSubContent} = useData()
+  const {teamId, setSubContent, user} = useData()
   const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState()
   const router = useRouter()
   const [author, setAuthor] = useState()
-  const [team, setTeam] = useState()
+  const [team, setTeam] = useState([])
+  const [isHistoryDetail, setIsHistoryDetail] = useState(false)
+
 
   useEffect(()=>{
     const fetchData = async () => {
@@ -42,11 +46,12 @@ const ProgramInfo = ({subContent}) => {
       
       setIsLoading(false)
     }
+    setIsLoading(true)
     fetchData()
-  },[])
+  },[subContent])
 
   const onEditClick = () => {
-    setSubContent({type:"programLog", id: subContent.id})
+    setSubContent({type:"programEdit", id: subContent.id})
     router.push(`/${teamId}/editProgram/${subContent.id}`)
   }
 
@@ -54,6 +59,10 @@ const ProgramInfo = ({subContent}) => {
     setSubContent({type:"resultLog", id: subContent.id})
     router.push(`/${teamId}/result/${subContent.type}/${subContent.id}`)
   }
+
+  // const onAddAuthorClick = () => {
+
+  // }
 
   if(isLoading)
     return(
@@ -76,11 +85,12 @@ const ProgramInfo = ({subContent}) => {
       {data.condition==="confirm" && <h1>마감일: {data.deadline.toDate().toLocaleString()}</h1>}
       <div className={styles.border} />
 
-      <h1>작성자: {author.name}</h1>
-      {/* <h1>초대됨</h1>
+      <h1>최초 생성자: {author.name}</h1>
+      <History data={data.history} />
+      {/* <h1>작성자</h1>
       <div className={styles.avatar_container}>
         <AvatarGroup max={6}>
-          {team.map((item, index) => {
+          {team?.map((item, index) => {
             return(
               <Tooltip title={item.name} key={index} >
                 <Avatar alt={item.name} src={item.photoUrl}/>
@@ -89,11 +99,16 @@ const ProgramInfo = ({subContent}) => {
           })}
         </AvatarGroup>
       </div> */}
+      {/* {team.some((obj) => obj.id === user.uid) && 
+        <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "0px", backgroundColor:"blue"}} size="small" onClick={onAddAuthorClick}>작성자 추가 +</Button>
+      } */}
 
-      <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "30px"}} size="small" onClick={onEditClick}>편 집</Button>
+    
+      <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "40px"}} size="small" onClick={onEditClick}>편 집</Button>
       {data.condition==="confirm" && data.publishStartDate <= new Date() &&
       <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "15px", backgroundColor:"olivedrab"}} size="small" onClick={onResultClick}>결과보기</Button>
       }
+      {/* <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "15px", backgroundColor:"rgb(155,144,121)"}} size="small" onClick={onResultClick}><NotificationsNoneIcon />알림보내기</Button> */}
     </div>
   )
 }

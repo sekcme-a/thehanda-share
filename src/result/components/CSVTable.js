@@ -43,7 +43,7 @@ const CSVTable = ({headers, data, type, docId}) => {
     },[triggerReload])
 
     const onUidClick = (uid)=>{
-        router.push(`/admin/user/${uid}`)
+        router.push(`/user/${uid}`)
     }
 
     const onYesClick = async(uid, hasPart)=>{

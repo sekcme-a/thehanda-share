@@ -28,6 +28,9 @@ import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import BackupTableOutlinedIcon from '@mui/icons-material/BackupTableOutlined';
 import SnippetFolderOutlinedIcon from '@mui/icons-material/SnippetFolderOutlined';
 import RuleRoundedIcon from '@mui/icons-material/RuleRounded';
+import EditNotificationsOutlinedIcon from '@mui/icons-material/EditNotificationsOutlined';
+import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 
 const Navbar = () => {
   const router = useRouter()
@@ -35,6 +38,7 @@ const Navbar = () => {
   const [open2, setOpen2] = useState(false)
   const [open3, setOpen3] = useState(false)
   const [open4, setOpen4] = useState(false)
+  const [open5, setOpen5] = useState(false)
   const { teamId, teamName, userData } = useData()
 
   const handleClick = () => {
@@ -43,6 +47,7 @@ const Navbar = () => {
   const handleClick2 = () => {setOpen2(!open2)}
   const handleClick3 = () => {setOpen3(!open3)}
   const handleClick4 = () => {setOpen4(!open4)}
+  const handleClick5 = () => {setOpen5(!open5)}
 
   const uppercase = (text) => {
     return text?.charAt(0).toUpperCase() + text.slice(1)
@@ -128,6 +133,14 @@ const Navbar = () => {
         {open3 ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={open3} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItemButton onClick={()=>onClick("programCondition")}>
+            <ListItemIcon>
+              <AccessTimeOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="프로그램 현황" />
+          </ListItemButton>
+        </List>
         <List component="div" disablePadding>
           <ListItemButton onClick={()=>onClick("program")}>
             <ListItemIcon>
@@ -227,7 +240,41 @@ const Navbar = () => {
 
       </Collapse>
       </>
-}
+    }
+
+
+{/* 
+      <>
+      <ListItemButton onClick={handleClick5}>
+        <ListItemIcon>
+          <EditNotificationsOutlinedIcon />
+        </ListItemIcon>
+        <ListItemText primary="알림 보내기" />
+        {open5 ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={open5} timeout="auto" unmountOnExit>
+
+        <List component="div" disablePadding>
+          <ListItemButton onClick={()=>onClick("section/program")}>
+            <ListItemIcon>
+              <NotificationsActiveOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="전체알림 보내기" />
+          </ListItemButton>
+        </List>
+
+        <List component="div" disablePadding>
+          <ListItemButton onClick={()=>onClick("section/survey")}>
+            <ListItemIcon>
+              <SnippetFolderOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="설문조사 섹션" />
+          </ListItemButton>
+        </List>
+
+      </Collapse>
+      </> */}
+    
 
 
       {/* <ListItemButton onClick={()=>onClick("program")}>

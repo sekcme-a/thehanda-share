@@ -10,9 +10,8 @@ const MultipleCheckbox = ({ title, items, index, id, data, handleData,text,isReq
   const [value, setValue] = useState("")
   const [selectedList, setSelectedList] = useState([])
   useEffect(() => {
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data?.length; i++) {
       if (data[i].id === id) {
-        console.log(data[i].value)
         setSelectedList(data[i].value)
       }
         

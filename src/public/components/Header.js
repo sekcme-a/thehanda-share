@@ -49,6 +49,8 @@ const Header = (props) => {
       setTitle("프로그램 승인 관리")
     else if (props.location==="confirmSurvey")
       setTitle("설문조사 승인 관리")
+    else if (props.location==="programCondition")
+      setTitle("프로그램 현황")
     db.collection("user").doc(userData.uid).get().then((doc) => {
       setPhoto(doc.data().photoUrl)
     })

@@ -21,13 +21,14 @@ import Anouncement from "src/[team_id]/anouncement/components/Anouncement"
 import ConfirmProgram from "src/[team_id]/confirmProgram/components/ConfirmProgram"
 import ConfirmSurvey from "src/[team_id]/confirmSurvey/components/ConfirmSurvey"
 import ConfirmAnouncement from "src/[team_id]/confirmAnouncement/components/ConfirmAnouncement"
+import ProgramCondition from "src/[team_id]/ProgramCondition/components/ProgramCondition"
 
 import SubContent from "src/public/subcontent/components/SubContent"
 
 const Index = () => {
     const router = useRouter()
     const {slug, team_id} = router.query
-    const {userData, setTeamId, setTeamName, subContent} = useData()
+    const {userData, setTeamId, setTeamName, setSubContent} = useData()
     const [isLoading, setIsLoading] = useState(true)    
     const [isTeamName, setIsTeamName] = useState(false)
 
@@ -46,6 +47,10 @@ const Index = () => {
         else
             router.push("/")
     },[userData])
+
+    useEffect(()=>{
+        setSubContent("index")
+    },[slug])
 
     if(isLoading)
         return(<LoaderGif />)
@@ -73,6 +78,7 @@ const Index = () => {
                 slug==="confirmProgram" ? <ConfirmProgram /> : 
                 slug==="confirmSurvey" ? <ConfirmSurvey /> : 
                 slug==="confirmAnouncement" ? <ConfirmAnouncement /> : 
+                slug==="programCondition" ? <ProgramCondition /> :
                 <></>
             }
           </div>

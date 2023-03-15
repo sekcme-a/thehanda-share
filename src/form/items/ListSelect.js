@@ -6,9 +6,8 @@ import MenuItem from '@mui/material/MenuItem';
 const ListSelect = ({ title, items, index, id, data, handleData,text,isRequired }) => {
   const [value, setValue] = useState("")
   useEffect(() => {
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data?.length; i++) {
       if (data[i].id === id) {
-        console.log(data[i].value)
         setValue(data[i].value)
       }
         

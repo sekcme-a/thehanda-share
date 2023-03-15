@@ -71,7 +71,7 @@ const Program = () => {
 
 
       let fileData = []
-      const fileQuery = await db.collection("team").doc(teamId).collection("programs").where("location","==",pathIdList[pathIdList.length-1]).get()
+      const fileQuery = await db.collection("team").doc(teamId).collection("programs").where("location","==",pathIdList[pathIdList.length-1]).orderBy("savedAt", "desc").get()
       fileQuery.docs?.map((doc) => {
         fileData.push({checked: false, id: doc.id, data: doc.data()})
       })
@@ -253,6 +253,63 @@ const Program = () => {
     setSelectedFolders([])
   }
 
+  const onCopyClick = async () => {
+    let foldersChecked = []
+    for(let i =0 ; i<folders.length; i++){
+      if(folders[i].checked)
+        foldersChecked.push(folders[i].id)
+    }
+    let filesChecked = []
+    for(let i = 0 ; i<files.length; i++){
+      if(files[i].checked)
+        filesChecked.push(files[i].id)
+    }
+    if(foldersChecked.length>0){
+      alert("폴더는 복사할 수 없습니다.")
+      return
+    }
+    console.log(filesChecked)
+    setIsContentLoading(true)
+    // filesChecked.forEach((id) => {
+    //   db.collection("team").doc(teamId).collection("programs").doc(id).get().then((doc) => {
+    //     db.collection("team").doc(teamId).collection("programs").doc().set({
+    //       ...doc.data(),
+    //       title: `${doc.data().title} - 복사본`,
+    //       condition: "unconfirm",
+    //       savedAt: new Date(),
+    //       author: user.uid,
+    //       history: [{type:"create", date: new Date(), text:`"${userData.displayName}" 님에 의해 생성됨.`}],
+    //       lastSaved: userData.displayName
+    //     })
+    //   })
+    // })
+    const batch = db.batch();
+    const promises = [];
+    
+    filesChecked.forEach((id) => {
+      const docRef = db.collection("team").doc(teamId).collection("programs").doc(id);
+      const promise = docRef.get().then((doc) => {
+        const newDocRef = db.collection("team").doc(teamId).collection("programs").doc();
+        const newData = {
+          ...doc.data(),
+          title: `${doc.data().title} - 복사본`,
+          condition: "unconfirm",
+          savedAt: new Date(),
+          author: user.uid,
+          history: [{type:"create", date: new Date(), text:`"${userData.displayName}" 님에 의해 생성됨.`}],
+          lastSaved: userData.displayName
+        };
+        batch.set(newDocRef, newData);
+      });
+      promises.push(promise);
+    });
+  
+    await Promise.all(promises);
+    await batch.commit();  
+    setTriggerReload(!triggerReload)
+  }
+
+  /*
   const onDeleteClick = async() => {
     if(!confirm("선택한 항목들을 삭제하시겠습니까?"))
       return
@@ -288,17 +345,6 @@ const Program = () => {
     for(let i = 0; i < childFolders.length ; i ++ ){
       batch.delete(db.collection("team_admin").doc(teamId).collection("folders").doc(childFolders[i]))
       const query = await db.collection("team").doc(teamId).collection("programs").where("location","==",childFolders[i]).get()
-      // query.docs.forEach((doc) => {
-        // filesToDelete.push(doc.id)
-        // db.collection("team").doc(teamId).collection("programs").doc(doc.id).get().then((res) =>{
-        //   if(res.data().team.includes(user.uid) || userData.roles[1]==="super")
-        //     batch.delete(db.collection("team").doc(teamId).collection("programs").doc(doc.id))
-        //   else{
-        //     alert("선택된 파일 중 삭제 권한이 없는 파일이 있습니다.")
-        //     return
-        //   }
-        // })
-      // })
       query.docs.forEach((doc)=>{
         db.collection("team").doc(teamId).collection("programs").doc(doc.id).update({location:"program"}).then(()=>{
           alert("선택된 폴더안에 프로그램을 발견해 맨앞으로 가져옵니다.")
@@ -323,6 +369,93 @@ const Program = () => {
       alert(e.message)
     }
   }
+  */
+ //위 코드를 간결하게 바꿈
+ const onDeleteClick = async () => {
+  if (!confirm("선택한 항목들을 삭제하시겠습니까?")) return;
+  setIsContentLoading(true);
+
+  const foldersChecked = folders.filter(f => f.checked).map(f => f.id);
+  const filesChecked = files.filter(f => f.checked).map(f => f.id);
+
+  // Find all child folders
+  const childFolders = [...foldersChecked];
+  for (let i = 0; i < childFolders.length; i++) {
+    const query = await db.collection("team_admin").doc(teamId).collection("folders").where("parent_node", "==", childFolders[i]).get();
+    query.docs.forEach((doc) => {
+      if (!childFolders.includes(doc.id)) {
+        childFolders.push(doc.id);
+      }
+    });
+  }
+
+  if(childFolders.length!==0)
+    alert("선택된 폴더 안의 프로그램들은 모두 홈으로 이동됩니다.")
+
+  const batch = db.batch();
+  const programsToUpdate = [];
+  childFolders.forEach((folderId) => {
+    batch.delete(db.collection("team_admin").doc(teamId).collection("folders").doc(folderId));
+    programsToUpdate.push(
+      db
+        .collection("team")
+        .doc(teamId)
+        .collection("programs")
+        .where("location", "==", folderId)
+        .get()
+        .then((querySnapshot) => {
+          const updatePromises = [];
+          querySnapshot.forEach((doc) => {
+            updatePromises.push(
+              db
+                .collection("team")
+                .doc(teamId)
+                .collection("programs")
+                .doc(doc.id)
+                .update("program")
+            );
+          });
+          return Promise.all(updatePromises);
+        })
+    );
+  });
+
+  // filesChecked.forEach(async (fileId) => {
+  //   const doc = await db.collection("team").doc(teamId).collection("programs").doc(fileId).get();
+  //   if (doc.exists) {
+  //     if (doc.data().team.includes(user.uid) || userData.roles[1] === "super") {
+  //       await db.collection("team").doc(teamId).collection("programs").doc(fileId).delete();
+  //     } else {
+  //       alert("선택된 파일 중 삭제 권한이 없는 파일은 삭제되지 않습니다.");
+  //     }
+  //   }
+  // });
+  let noAuthority = false
+  await Promise.all(filesChecked.map(async (fileId) => {
+    const doc = await db.collection("team").doc(teamId).collection("programs").doc(fileId).get();
+    if (doc.exists) {
+      if (doc.data().team.includes(user.uid) || userData.roles[1] === "super") {
+        await db.collection("team").doc(teamId).collection("programs").doc(fileId).delete();
+      } else {
+        noAuthority = true
+      }
+    }
+  }));
+  if(noAuthority)
+    alert("선택된 파일 중 삭제 권한이 없는 파일은 삭제되지 않습니다.");
+  
+
+  try {
+    await Promise.all(programsToUpdate);
+    await batch.commit();
+    alert("성공적으로 삭제되었습니다.");
+    setTriggerReload(!triggerReload);
+  } catch (e) {
+    console.log(e);
+    alert(e.message);
+  }
+};
+
 
   const onFileClick = (id) => {
     // router.push(`/${teamId}/editProgram/${id}`)
@@ -360,6 +493,9 @@ const Program = () => {
         <div className={styles.button} onClick={onChangeLocationClick}>
           이동
         </div>
+        <div className={styles.button} onClick={onCopyClick}>
+          복사
+        </div> 
         <div className={styles.button} onClick={onDeleteClick}>
           삭제
         </div> 

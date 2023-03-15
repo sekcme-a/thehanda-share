@@ -21,6 +21,10 @@ import { Switch } from "@mui/material"
 import { Backdrop } from "@mui/material"
 import Form from "src/form/Form"
 import Article from "src/article/components/Article"
+import SubContent from "src/public/subcontent/components/SubContent"
+
+import axios from "axios"
+import { sendNotification } from "src/public/hooks/notification"
 //stepper
 const data = [
   "게시물 작성",
@@ -31,7 +35,7 @@ const data = [
 const EditProgram = () => {
   const router = useRouter()
   const {team_id, file_id} = router.query
-  const {userData, setTeamId, teamId} = useData()
+  const {userData, setTeamId, teamId, setSubContent} = useData()
 
   const [step, setStep] = useState(0)
 
@@ -63,6 +67,9 @@ const EditProgram = () => {
   const [rejectText, setRejectText] = useState("")
   const [openBackdrop, setOpenBackdrop] = useState(false)
 
+  const [isSendAlarm, setIsSendAlarm] = useState(true)
+  const [alarmText, setAlarmText] = useState("")
+
   const [isLoading, setIsLoading] = useState(true)
 
   // const onValuesChangeWithEvent = (event, type) => {
@@ -70,7 +77,10 @@ const EditProgram = () => {
   // }
 
   useEffect(()=>{
-    console.log(postValues)
+    setSubContent({
+      id: file_id,
+      type: "programEdit"
+    })
   },[postValues])
 
 
@@ -86,12 +96,14 @@ const EditProgram = () => {
       }
       
       const postDoc = await db.collection("team").doc(team_id).collection("programs").doc(file_id).get()
-      if(postDoc.exists)
+      if(postDoc.exists){
         setPostValues({...postDoc.data(),
           deadline: postDoc.data().deadline?.toDate(),
           programStartDate: postDoc.data().programStartDate?.toDate(),
           publishStartDate: postDoc.data().publishStartDate?.toDate()
         })
+        setAlarmText(`[${postDoc.data().title}] 프로그램이 추가되었습니다.`)
+      }
       console.log(postDoc.data())
       setIsLoading(false)
     }
@@ -147,7 +159,7 @@ const EditProgram = () => {
       db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
         ...postValues,
         sectionsId: sectionsId,
-        history: [{type:"submit", date: new Date(), text:`${userData.displayName}님에 의해 저장됨.`},...postValues.history],
+        history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
       }).then(()=>{
@@ -157,7 +169,7 @@ const EditProgram = () => {
       db.collection("team").doc(team_id).collection("programs").doc(file_id).set({
         ...postValues,
         sectionsId: sectionsId,
-        history: [{type:"create", date: new Date(), text:`${userData.displayName}님에 의해 생성됨.`},...postValues.history],
+        history: [{type:"create", date: new Date(), text:`"${userData.displayName}" 님에 의해 생성됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
         location: location[location.length-1]
@@ -171,7 +183,7 @@ const EditProgram = () => {
     const doc = await db.collection("team").doc(team_id).collection("programs").doc(file_id).get()
     if(doc.exists){
       db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
-        history: [{type:"apply", date: new Date(), text: `${userData.displayName}님에 의해 승인신청.`}, ...postValues.history],
+        history: [{type:"apply", date: new Date(), text: `"${userData.displayName}" 님에 의해 승인신청.`}, ...postValues.history],
         condition: "waitingForConfirm"
       }).then(()=>{
         alert("성공적으로 승인신청되었습니다.")
@@ -186,7 +198,7 @@ const EditProgram = () => {
       alert("거절 사유를 입력해주세요.")
     else{
       db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
-        history: [{type:"reject", date: new Date(), text: `${userData.displayName}님에 의해 승인거절됨.`, rejectText: rejectText}, ...postValues.history],
+        history: [{type:"reject", date: new Date(), text: `"${userData.displayName}" 님에 의해 승인거절됨.`, rejectText: rejectText}, ...postValues.history],
         condition: "decline"
       }).then(()=>{
         alert("승인 거절되었습니다.")
@@ -194,35 +206,107 @@ const EditProgram = () => {
     }
   }
 
-  const onConfirmClick = () => {
+  const onConfirmClick = async() => {
     //예약 게재일이 현재시각보다 미래에 있음(예약게재일 적용) postValues.publishStartDate > new Date()
     if(postValues.publishStartDate > new Date()){
       db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
         condition: "confirm",
-        history: [{type: "confirm", date: new Date(), text:`${userData.displayName}님에 의해 승인후 예약게재되었습니다.`}, ...postValues.history]
-      }).then(()=>{
+        history: [{type: "confirm", date: new Date(), text:`"${userData.displayName}" 님에 의해 승인후 예약게재되었습니다.`}, ...postValues.history]
+      }).then(async()=>{
         alert("승인 완료 후 예약게재되었습니다.")
+
+        //메세지 보낼 토큰 불러오기
+        if(isSendAlarm){
+          alert("알림 전송을 시작합니다. 시간이 소요될 수 있습니다.")
+          if(alarmText==="" || alarmText===" "){
+            alert("알림문구는 빈칸일 수 없습니다.")
+          } else{
+            const querySnapshot = await db.collection("user").where("isAlarmOn", "==", true).where("pushToken", ">", "").get()
+            const tokenList = querySnapshot.docs.map((doc)=>{
+              if(doc.data().alarmSetting && doc.data().alarmSetting[team_id]){
+                return doc.data().pushToken
+              }else{
+                //알람세팅이 되지 않은 초기상태라면 메세지 보내기
+                return doc.data().pushToken
+              }
+            })
+            
+            //중복된 토큰 삭제
+            const uniqueTokenList = [...new Set(tokenList)];
+            
+            Promise.all(
+              uniqueTokenList.map(async (token) => {
+                try {
+                  const result = await sendNotification(token, alarmText);
+                } catch (e) {
+                  console.log(e);
+                }
+              })
+            ).then(() => {
+              console.log("All notifications sent successfully");
+              alert("알림을 성공적으로 전송했습니다.")
+            }).catch((error) => {
+              console.log("Error sending notifications: ", error);
+            });
+          }
+        } 
       })
     } else{
       db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
         condition: "confirm",
         publishStartDate: new Date(),
-        history: [{type: "confirm", date: new Date(), text:`${userData.displayName}님에 의해 승인후 게재되었습니다.`}, ...postValues.history]
-      }).then(()=>{
+        history: [{type: "confirm", date: new Date(), text:`"${userData.displayName}" 님에 의해 승인후 게재되었습니다.`}, ...postValues.history]
+      }).then(async()=>{
+        
         alert("승인 완료 후 게재되었습니다.")
+        
+        //메세지 보낼 토큰 불러오기
+        if(isSendAlarm){
+          alert("알림 전송을 시작합니다. 시간이 소요될 수 있습니다.")
+          if(alarmText==="" || alarmText===" "){
+            alert("알림문구는 빈칸일 수 없습니다.")
+          } else{
+            const querySnapshot = await db.collection("user").where("isAlarmOn", "==", true).where("pushToken", ">", "").get()
+            const tokenList = querySnapshot.docs.map((doc)=>{
+              if(doc.data().alarmSetting && doc.data().alarmSetting[team_id]){
+                return doc.data().pushToken
+              }else{
+                //알람세팅이 되지 않은 초기상태라면 메세지 보내기
+                return doc.data().pushToken
+              }
+            })
+            
+            //중복된 토큰 삭제
+            const uniqueTokenList = [...new Set(tokenList)];
+            
+            Promise.all(
+              uniqueTokenList.map(async (token) => {
+                try {
+                  const result = await sendNotification(token, alarmText);
+                } catch (e) {
+                  console.log(e);
+                }
+              })
+            ).then(() => {
+              console.log("All notifications sent successfully");
+              alert("알림을 성공적으로 전송했습니다.")
+            }).catch((error) => {
+              console.log("Error sending notifications: ", error);
+            });
+          }
+        }
+        
       })
+    
     }
-    // db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
-    //   condition: "confirm",
-    //   publishStartDate: new Date(),
-    // })
+
   }
 
   const onCancelClick = () => {
     if(confirm("게재취소하시겠습니까?\n(프로그램 결과 데이터가 삭제됩니다.)")){
       db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
         condition: "unconfirm",
-        history: [{type:"cancelDeploy", date: new Date(), text:`${userData.displayName}님에 의해 게재 취소되었습니다.`}, ...postValues.history]
+        history: [{type:"cancelDeploy", date: new Date(), text:`"${userData.displayName}" 님에 의해 게재 취소되었습니다.`}, ...postValues.history]
       }).then(()=>{
         alert("게재취소되었습니다.")
       })
@@ -321,10 +405,16 @@ const EditProgram = () => {
                         </Button>
                         <TextField sx={{marginLeft:"15px", width:"500px"}} label="거절사유" size="small" multiline value={rejectText} onChange={(e)=>setRejectText(e.target.value)}/>
                       </div>
+
                       <div className={styles.submit_content_item}>
-                        <Button variant="contained" size="small" sx={{backgroundColor:"rgb(45, 45, 179)"}} onClick={onConfirmClick}>
+                      <Button variant="contained" size="small" sx={{backgroundColor:"rgb(45, 45, 179)"}} onClick={onConfirmClick}>
                           승인 및 게재
                         </Button>
+                        <h5 style={{fontSize:"14px", marginLeft:"15px"}}>알림 보내기</h5>
+                        <Switch checked={isSendAlarm} onChange={(e)=>setIsSendAlarm(e.target.checked)} size="small"/>
+                        {isSendAlarm &&
+                          <TextField value={alarmText} onChange={(e)=>setAlarmText(e.target.value)} size="small" style={{width:"350px", marginLeft:"10px"}} />
+                        }
                       </div>
                     </>
                   }
@@ -347,6 +437,7 @@ const EditProgram = () => {
 
 
           <div className={styles.sub_content_container}>
+            <SubContent />
           </div>
         </div>
       </div>

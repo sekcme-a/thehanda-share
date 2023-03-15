@@ -53,7 +53,7 @@ export const sendPushNotification = async (token, message) => {
 }
 
 // Usage example
-const token = 'ExponentPushToken[b--Gt0CD1B677VykcDp9at]';
-const message = 'Hello, world!';
+// const token = 'ExponentPushToken[b--Gt0CD1B677VykcDp9at]';
+// const message = 'Hello, world!';
 
-sendPushNotification(token, message);
+// sendPushNotification(token, message);

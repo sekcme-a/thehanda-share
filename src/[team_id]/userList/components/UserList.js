@@ -76,7 +76,8 @@ const UserList = () => {
       return (
         <div className={styles.user_container}>
           {row.phoneNumber}
-          {row.phoneVerified && 
+          {console.log(row, row.phoneVerified)}
+          {row.phoneVerified===true && 
             <div className={styles.verified}>
             <DoneAllIcon fontSize="24px"/>
             인증됨
@@ -87,25 +88,24 @@ const UserList = () => {
     }
   },
 
-  {
-    flex: 0.15,
-    minWidth: 100,
-    headerName: '권한',
-    field: 'roles',
-    renderCell: ({ row }) => {
-      return (
-        <Typography noWrap sx={{ textTransform: 'capitalize' }}>
-          {row.roles}
-        </Typography>
-      )
-    }
-  },
+  // {
+  //   flex: 0.15,
+  //   minWidth: 100,
+  //   headerName: '권한',
+  //   field: 'roles',
+  //   renderCell: ({ row }) => {
+  //     return (
+  //       <Typography noWrap sx={{ textTransform: 'capitalize' }}>
+  //         {row.roles}
+  //       </Typography>
+  //     )
+  //   }
+  // },
   ]
   
 
   useEffect(() => {
     const fetchData = async () => {
-
       //useData()에 저장된 유저리스트가 없다면 불러오기.
       if(userList.length===0){
         fetchUserList()
@@ -121,9 +121,10 @@ const UserList = () => {
 
 
   const fetchUserList = async() => {
-    db.collection("team_admin").doc(teamId).collection("users").get().then((query) => {
+    db.collection("team").doc(teamId).collection("users").get().then((query) => {
       let cityAvatars = []
       const promises = query.docs.map((doc,index) => {
+        console.log(doc.id)
         return db.collection("user").doc(doc.id).get().then((userDoc) => {
           cityAvatars.push(userDoc.data().photoUrl)
           return {...userDoc.data(), id: index}

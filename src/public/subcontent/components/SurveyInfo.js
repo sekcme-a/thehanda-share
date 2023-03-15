@@ -19,8 +19,9 @@ const SurveyInfo = ({subContent}) => {
         setData(doc.data())
       setIsLoading(false)
     }
+    setIsLoading(true)
     fetchData()
-  })
+  },[subContent])
 
   const onEditClick = () => {
     setSubContent({type:"surveyLog", id: subContent.id})

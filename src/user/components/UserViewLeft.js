@@ -121,7 +121,7 @@ const UserViewLeft = ({ data }) => {
                   <Typography variant='body4' sx={{ textTransform: 'capitalize' }}>
                     <div style={{display: "flex", alignItems:"center"}}>
                       {data.phoneNumber}
-                      {data.phoneVerified && 
+                      {data.phoneVerified===true && 
                         <>
                           <DoneAllIcon fontSize="24px" style={{marginLeft: "5px", color: "rgb(42, 42, 231)"}}/>
                           <p style={{color: "rgb(42, 42, 231)", fontSize:"12px"}}>인증됨</p>

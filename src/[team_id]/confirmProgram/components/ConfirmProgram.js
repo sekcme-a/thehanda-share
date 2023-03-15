@@ -5,7 +5,7 @@ import styles from "../styles/confirmProgram.module.css"
 import { firestore as db } from "firebase/firebase"
 
 const ConfirmProgram = () => {
-  const {userData, teamId} = useData()
+  const {userData, teamId, setSubContent} = useData()
   const router = useRouter()
   const [files, setFiles] = useState([])
 
@@ -26,7 +26,7 @@ const ConfirmProgram = () => {
   },[])
 
   const onFileClick = (id) => {
-    router.push(`/${teamId}/editProgram/${id}`)
+    setSubContent({type:"programs", id: id})
   }
   
   return(

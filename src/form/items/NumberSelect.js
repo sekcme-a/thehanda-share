@@ -9,7 +9,6 @@ const NumberSelect = ({ title, items, index, id, data, handleData,text,isRequire
   useEffect(() => {
     for (let i = 0; i < data?.length; i++) {
       if (data[i].id === id) {
-        console.log(data[i].value)
         setValue(data[i].value)
       }
     }

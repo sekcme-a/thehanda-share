@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
 
 const ManageTeam = () => {
-  const { userData, teamId, teamName } = useData()
+  const { userData, teamId } = useData()
   const [cardData, setCardData] = useState([
     { totalUser: 0, title: "loading", avatars:['/default_avatar.png','/default_avatar.png','/default_avatar.png','/default_avatar.png']},
     { totalUser: 0, title: "loading", avatars:['/default_avatar.png','/default_avatar.png','/default_avatar.png','/default_avatar.png']},
@@ -141,7 +141,7 @@ const ManageTeam = () => {
     <div>
       <PageHeader title="팀 구성원 현황" subtitle="코드를 통해 팀 구성원을 쉽게 관리하세요." mt="20px"/>
       <ControlTeamUser cardData={cardData} />
-      <PageHeader title="팀 구성원 목록" subtitle={`${teamName} 팀의 모든 구성원 목록입니다, 변경사항은 새로고침 시 표시됩니다.`} mt="40px" />
+      <PageHeader title="팀 구성원 목록" subtitle={`${teamId} 팀의 모든 구성원 목록입니다, 변경사항은 새로고침 시 표시됩니다.`} mt="40px" />
       <UserList data={listData} columns={columns} />
     </div>
   )

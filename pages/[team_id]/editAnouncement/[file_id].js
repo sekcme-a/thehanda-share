@@ -153,7 +153,7 @@ const EditAnouncement = () => {
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).update({
         ...postValues,
         sectionsId: sectionsId,
-        history: [{type:"submit", date: new Date(), text:`${userData.displayName}님에 의해 저장됨.`},...postValues.history],
+        history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
       }).then(()=>{
@@ -163,7 +163,7 @@ const EditAnouncement = () => {
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).set({
         ...postValues,
         sectionsId: sectionsId,
-        history: [{type:"create", date: new Date(), text:`${userData.displayName}님에 의해 생성됨.`},...postValues.history],
+        history: [{type:"create", date: new Date(), text:`"${userData.displayName}" 님에 의해 생성됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
         location: location[location.length-1]
@@ -177,7 +177,7 @@ const EditAnouncement = () => {
     const doc = await db.collection("team").doc(team_id).collection("anouncements").doc(file_id).get()
     if(doc.exists){
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).update({
-        history: [{type:"apply", date: new Date(), text: `${userData.displayName}님에 의해 승인신청.`}, ...postValues.history],
+        history: [{type:"apply", date: new Date(), text: `"${userData.displayName}" 님에 의해 승인신청.`}, ...postValues.history],
         condition: "waitingForConfirm"
       }).then(()=>{
         alert("성공적으로 승인신청되었습니다.")
@@ -192,7 +192,7 @@ const EditAnouncement = () => {
       alert("거절 사유를 입력해주세요.")
     else{
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).update({
-        history: [{type:"reject", date: new Date(), text: `${userData.displayName}님에 의해 승인거절됨.`, rejectText: rejectText}, ...postValues.history],
+        history: [{type:"reject", date: new Date(), text: `"${userData.displayName}" 님에 의해 승인거절됨.`, rejectText: rejectText}, ...postValues.history],
         condition: "decline"
       }).then(()=>{
         alert("승인 거절되었습니다.")
@@ -205,7 +205,7 @@ const EditAnouncement = () => {
     if(postValues.publishStartDate > new Date()){
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).update({
         condition: "confirm",
-        history: [{type: "confirm", date: new Date(), text:`${userData.displayName}님에 의해 승인후 예약게재되었습니다.`}, ...postValues.history]
+        history: [{type: "confirm", date: new Date(), text:`"${userData.displayName}" 님에 의해 승인후 예약게재되었습니다.`}, ...postValues.history]
       }).then(()=>{
         alert("승인 완료 후 예약게재되었습니다.")
       })
@@ -213,7 +213,7 @@ const EditAnouncement = () => {
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).update({
         condition: "confirm",
         publishStartDate: new Date(),
-        history: [{type: "confirm", date: new Date(), text:`${userData.displayName}님에 의해 승인후 게재되었습니다.`}, ...postValues.history]
+        history: [{type: "confirm", date: new Date(), text:`"${userData.displayName}" 님에 의해 승인후 게재되었습니다.`}, ...postValues.history]
       }).then(()=>{
         alert("승인 완료 후 게재되었습니다.")
       })
@@ -228,7 +228,7 @@ const EditAnouncement = () => {
     if(confirm("게재취소하시겠습니까?\n(프로그램 결과 데이터가 삭제됩니다.)")){
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).update({
         condition: "unconfirm",
-        history: [{type:"cancelDeploy", date: new Date(), text:`${userData.displayName}님에 의해 게재 취소되었습니다.`}, ...postValues.history]
+        history: [{type:"cancelDeploy", date: new Date(), text:`"${userData.displayName}" 님에 의해 게재 취소되었습니다.`}, ...postValues.history]
       }).then(()=>{
         alert("게재취소되었습니다.")
       })

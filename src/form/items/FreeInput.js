@@ -5,9 +5,8 @@ import styles from "../items.module.css"
 const SmallInput = ({ title, items, index, id, data, handleData,text,isRequired }) => {
   const [value, setValue] = useState("")
   useEffect(() => {
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data?.length; i++) {
       if (data[i].id === id) {
-        console.log(data[i].value)
         setValue(data[i].value)
       }
         
