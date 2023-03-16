@@ -22,6 +22,7 @@ import ConfirmProgram from "src/[team_id]/confirmProgram/components/ConfirmProgr
 import ConfirmSurvey from "src/[team_id]/confirmSurvey/components/ConfirmSurvey"
 import ConfirmAnouncement from "src/[team_id]/confirmAnouncement/components/ConfirmAnouncement"
 import ProgramCondition from "src/[team_id]/ProgramCondition/components/ProgramCondition"
+import Contact from "src/[team_id]/Contact/components/Contact"
 
 import SubContent from "src/public/subcontent/components/SubContent"
 
@@ -79,6 +80,7 @@ const Index = () => {
                 slug==="confirmSurvey" ? <ConfirmSurvey /> : 
                 slug==="confirmAnouncement" ? <ConfirmAnouncement /> : 
                 slug==="programCondition" ? <ProgramCondition /> :
+                slug==="contact" ? <Contact /> :
                 <></>
             }
           </div>

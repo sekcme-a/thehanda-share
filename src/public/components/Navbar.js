@@ -31,6 +31,7 @@ import RuleRoundedIcon from '@mui/icons-material/RuleRounded';
 import EditNotificationsOutlinedIcon from '@mui/icons-material/EditNotificationsOutlined';
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const Navbar = () => {
   const router = useRouter()
@@ -242,6 +243,12 @@ const Navbar = () => {
       </>
     }
 
+          <ListItemButton onClick={()=>onClick("contact")}>
+            <ListItemIcon>
+              <HelpOutlineIcon />
+            </ListItemIcon>
+            <ListItemText primary="센터문의 관리" />
+          </ListItemButton>
 
 {/* 
       <>
