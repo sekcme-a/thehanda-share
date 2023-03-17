@@ -48,7 +48,7 @@ const Contact = () => {
             ...doc.data(),
             id: doc.id,
             displayName: userDoc.data().displayName,
-            photoUrl: userDoc.data().photoUrl,
+            photoUrl: userDoc.data().photoUrl, 
           };
         }
       }).filter(Boolean))

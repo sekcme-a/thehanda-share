@@ -24,7 +24,7 @@ const ProgramCondition = () => {
       const tempList2 = querySnapshot2.docs.map((doc)=>{
         if((doc.data().programStartDate.toDate().getTime()-new Date().getTime())<432000000)
           return({id: doc.id, data: doc.data()})
-      }).filter(Boolean)
+      }).filter(Boolean) 
       console.log(tempList2)
       setPublishStartSoonList([...tempList2])
       
