@@ -21,8 +21,8 @@ import Anouncement from "src/[team_id]/anouncement/components/Anouncement"
 import ConfirmProgram from "src/[team_id]/confirmProgram/components/ConfirmProgram"
 import ConfirmSurvey from "src/[team_id]/confirmSurvey/components/ConfirmSurvey"
 import ConfirmAnouncement from "src/[team_id]/confirmAnouncement/components/ConfirmAnouncement"
-import ProgramCondition from "src/[team_id]/ProgramCondition/components/ProgramCondition"
-import Contact from "src/[team_id]/Contact/components/Contact"
+import ProgramCondition from "src/[team_id]/programCondition/components/ProgramCondition"
+import Contact from "src/[team_id]/contact/components/Contact"
 
 import SubContent from "src/public/subcontent/components/SubContent"
 
