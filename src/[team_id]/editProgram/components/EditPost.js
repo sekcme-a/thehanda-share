@@ -8,7 +8,7 @@ import DropperImage from  "./DropperImage"
 
 import SelectMultipleChip from "src/mui/SelectMultipleChip"
 import BasicSelect from "src/mui/BasicSelect"
-
+import Editor from "src/public/components/Editor"
 
 import { TextField } from "@mui/material"
 import { SelectMultiple } from "mdi-material-ui"
@@ -53,6 +53,10 @@ const EditPost = ({values, setValues, sections, fileId,type}) => {
   const [sectionItems, setSectionItems] = useState([])
   const [selectedSections, setSelectedSections] = useState([])
   const {teamId} = useData()
+
+  const onHtmlChange = (html, index) => {
+    onIntroChange(index, "html", html)
+  }
 
   useEffect(()=>{
     const sectionsNameArray = sections.map(section => section.name);
@@ -129,7 +133,15 @@ const EditPost = ({values, setValues, sections, fileId,type}) => {
   }
   const onIntroChange = (index, type, value) => {
     const changedValue = values.introduce.map((item, i) => i === index ? { ...item, [type]: value } : item)
-    setValues({...values, introduce: [...changedValue]})
+    if (type === "title") {
+      if (changedValue[0].title!==values.introduce[index].title) {
+        setValues({ ...values, introduce: [...changedValue] })
+      }
+    }
+    else if (type === "html")
+      console.log([...changedValue])
+      if (changedValue[0].html !== values.introduce[index].html)
+        setValues({ ...values, introduce: [...changedValue] })
   }
 
   const onAddScheduleClick = () => {
@@ -144,23 +156,47 @@ const EditPost = ({values, setValues, sections, fileId,type}) => {
     setValues({...values, schedule: [...changedValue]})
   }
 
+  const onTypeChange = (checked, target) => {
+    if(checked)
+      setValues({...values, type: target})
+    else if(target==="common"){
+      alert("타입은 없을 수 없습니다.")
+    } else
+      setValues({...values, type: "common"})
+  }
+
 
 
 
   return(
     <div className={styles.main_container}>
       {type!=="survey" &&
-        <div className={styles.item_container}>
-          <h1>등급</h1>
-          <div className={styles.checkbox}>
-            <Checkbox size="small" style={{paddingRight:"4px"}} checked={values.isMain} onChange={onIsMainChange}/>
-            <p>메인 프로그램</p>
+        <>
+          <div className={styles.item_container}>
+            <h1>등급</h1>
+            <div className={styles.checkbox}>
+              <Checkbox size="small" style={{paddingRight:"4px"}} checked={values.isMain} onChange={onIsMainChange}/>
+              <p>메인 프로그램</p>
+            </div>
+            <div className={styles.checkbox}>
+              <Checkbox size="small" style={{paddingRight:"4px"}} checked={!values.isMain} onChange={onIsCommonChange}/>
+              <p>일반 프로그램</p>
+            </div>
           </div>
-          <div className={styles.checkbox}>
-            <Checkbox size="small" style={{paddingRight:"4px"}} checked={!values.isMain} onChange={onIsCommonChange}/>
-            <p>일반 프로그램</p>
+
+          <div className={styles.item_container}>
+            <h1>타입</h1>
+            <div className={styles.checkbox}>
+              <Checkbox size="small" id="common" style={{paddingRight:"4px"}} checked={values.type==="common"} onChange={(e)=>onTypeChange(e.target.checked, e.target.id)}/>
+              <p>일반</p>
+            </div>
+            <div className={styles.checkbox}>
+              <Checkbox size="small" id="children" style={{paddingRight:"4px"}} checked={values.type==="children"} onChange={(e)=>onTypeChange(e.target.checked, e.target.id)}/>
+              <p>자녀</p>
+            </div>
+
           </div>
-        </div>
+        </>
       }
       <div className={styles.item_container}>
         <h1>상태</h1>
@@ -264,12 +300,14 @@ const EditPost = ({values, setValues, sections, fileId,type}) => {
         <div className={styles.info_item_container}>
           {values.introduce?.map((item,index) => {
             return(
-              <div key={index} className={styles.item}>
+              <div key={index} className={styles.item2}>
                 <TextField value={item.title} onChange={(e)=>onIntroChange(index, "title", e.target.value)} sx={{width:160}} size="small" label="제목"></TextField>
-                <div style={{width:"5px"}}/>
-                <TextField value={item.text} onChange={(e)=>onIntroChange(index, "text", e.target.value)} size="small" multiline
-                  label="내용" sx={{width: 445}} />
-                <DeleteOutlineRoundedIcon style={{color: "red", paddingLeft:"10px", paddingTop:"5px"}} onClick={()=>onDeleteIntroClick(index)}/>
+                <DeleteOutlineRoundedIcon style={{color: "red", paddingLeft:"10px", paddingTop:"5px", cursor:"pointer"}} onClick={()=>onDeleteIntroClick(index)}/>
+                <div style={{width:"100%", height:"10px"}}/>
+                {/* <TextField value={item.text} onChange={(e)=>onIntroChange(index, "text", e.target.value)} size="small" multiline
+                  label="내용" sx={{width: 445}} /> */}
+                <Editor path={`content/${fileId}`} handleChange={onHtmlChange} textData={item.html} index={index} />
+                
               </div>
             )
           })}

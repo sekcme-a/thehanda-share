@@ -6,7 +6,6 @@ import Image from "next/image"
 
 import useData from "context/data"
 import { firestore as db } from "firebase/firebase"
-
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import Button from '@mui/material/Button'
 import Tabs from '@mui/material/Tabs';
@@ -91,8 +90,10 @@ const Contents = ({data, teamName, id, type, mode}) => {
           })
         }
       })
-    } else
+    } else{
       router.push(`/surveys/${teamName}/${id}`);
+    }
+      
     // else
     //   router.push(`result/${teamName}/${id}`)
   }
@@ -174,7 +175,7 @@ const Contents = ({data, teamName, id, type, mode}) => {
         {type !== "surveys" && <Tab label="프로그램 일정" style={{ margin: "0 10px", fontSize: "15px" }} />}
       </Tabs>
 
-      {console.log(data.publishedDate)}
+
       {selectedItem === 0 && data.introduce.map((item, index) => {
         return (
           <div className={styles.content_container} key={index}>
@@ -182,7 +183,10 @@ const Contents = ({data, teamName, id, type, mode}) => {
             {/* <div className="quill_custom_editor">
               <div dangerouslySetInnerHTML={createMarkup(item.html)} />
             </div> */}
-            <p>{item.text}</p>
+            {/* <p>{item.text}</p> */}
+            <div className="quill_custom_editor">
+              <div dangerouslySetInnerHTML={createMarkup(item.html)} />
+            </div>
           </div>
         )
       })}

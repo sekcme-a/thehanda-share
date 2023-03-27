@@ -28,3 +28,28 @@
   border-top: 1px solid rgb(200,200,200);
   margin: 15px 0;
 }
+
+.dialog_container{
+  display: flex;
+  flex-wrap: wrap;
+  width: 500px;
+  padding: 10px 20px;
+  align-items: center;
+}
+
+.url_container h1{
+
+}
+.url_container h1{
+  max-width: 200px;
+  overflow-x: scroll;
+  padding: 2px 5px;
+  border: 1px solid #999;
+  border-radius: 5px;
+}
+.url_text{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 5px;
+}

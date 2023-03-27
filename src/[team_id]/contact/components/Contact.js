@@ -129,14 +129,19 @@ const Contact = () => {
     })
   }
   
-  const onSendClick = () => {
+  const onSendClick = async () => {
     const {id, uid } = sortedData[selectedIndex]
     if(confirm("답장을 보내시겠습니까?")){
       const batch = db.batch()
       batch.update(db.collection("team_admin").doc(teamId).collection("contact").doc(id), {reply: true, repliedText: repliedText })
       batch.set(db.collection("user").doc(uid).collection("message").doc(),{
-        ...data[selectedIndex], repliedText: repliedText, repliedAt: new Date()
+        ...data[selectedIndex], repliedText: repliedText, repliedAt: new Date(),read: false,
       })
+      const userDoc = await db.collection("user").doc(uid).collection("message").doc("status").get()
+      if(userDoc.exists)
+        batch.set(db.collection("user").doc(uid).collection('message').doc("status"), {unread: userDoc.data().unread+1 })
+      else
+        batch.set(db.collection("user").doc(uid).collection('message').doc("status"), {unread: 1 })
       batch.commit().then(async()=>{
         setData(prevData => prevData.map((item)=>{
           if(item.id === id)
@@ -144,6 +149,7 @@ const Contact = () => {
           else
             return item
         }))
+        setOpenContent(false)
         db.collection("user").doc(uid).get().then(async(doc) => {
           console.log(doc.data())
           try {

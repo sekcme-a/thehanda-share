@@ -90,15 +90,17 @@ const EditAnouncement = () => {
       }
       
       const postDoc = await db.collection("team").doc(team_id).collection("anouncements").doc(file_id).get()
-      if(postDoc.exists)
+      if(postDoc.exists){
         setPostValues({...postDoc.data()
         })
+          
+      const selectedSectionNameArray = postDoc.data().sections.map(section => section.name)
+      setSelectedSections(selectedSectionNameArray)
+      }
       console.log(postDoc.data())
       const sectionsNameArray = sectionDoc.data().data.map(section => section.name);
       setSectionItems(sectionsNameArray)
-  
-      const selectedSectionNameArray = postDoc.data().sections.map(section => section.name)
-      setSelectedSections(selectedSectionNameArray)
+
       setIsLoading(false)
     }
     if(userData)
@@ -225,7 +227,7 @@ const EditAnouncement = () => {
   }
 
   const onCancelClick = () => {
-    if(confirm("게재취소하시겠습니까?\n(프로그램 결과 데이터가 삭제됩니다.)")){
+    if(confirm("게재취소하시겠습니까?")){
       db.collection("team").doc(team_id).collection("anouncements").doc(file_id).update({
         condition: "unconfirm",
         history: [{type:"cancelDeploy", date: new Date(), text:`"${userData.displayName}" 님에 의해 게재 취소되었습니다.`}, ...postValues.history]

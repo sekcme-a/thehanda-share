@@ -10,7 +10,7 @@ import useData from "context/data"
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 
-const CSVTable = ({headers, data, type, docId}) => {
+const CSVTable = ({headers, data, type, docId, isChildrenMode}) => {
     const router = useRouter()
     const {teamId} = useData()
     const [isLoading, setIsLoading] = useState(true)
@@ -105,22 +105,33 @@ const CSVTable = ({headers, data, type, docId}) => {
                 <tbody>
                     {rowData?.map((item, index)=>{
                         return(
-                            <tr key={index} >
+                            <tr key={index}>
                                 {headers.map((head, index2)=>{
                                     return(
                                         <td key={index2} onClick={()=>onUidClick(item.uid)}>
-                                            {item[head.key].length>30 ? `${item[head.key].substr(0,30)}...` : item[head.key]}
+                                            {item[head.key]?.length>30 ? `${item[head.key].substr(0,30)}...` : item[head.key]}
                                         </td>
                                     )
                                 })}
-                                {type==="programs" &&
+                                {type==="programs" && !isChildrenMode ? 
                                     <td className={styles.part_container}>
+                                        {console.log(item)}
                                         {item.hasPart===true && <h1><CheckCircleOutlineIcon /> 참여함</h1>}
                                         {item.hasPart===false && <h2><CancelOutlinedIcon /> 미참여</h2>}
                                         {item.hasPart!==undefined && <p>|</p>}
                                         <Button disabled={item.hasPart===true} onClick={()=>onYesClick(item.uid, item.hasPart)}>참여함</Button>
                                         <Button style={item.hasPart===true ?{color:"red"} : {}} disabled={item.hasPart===false} onClick={()=>onNoClick(item.uid, item.hasPart)}>미참여</Button>
                                     </td>
+                                    :
+                                    type==="programs" && item.relation==="신청자"&&
+                                        <td className={styles.part_container}>
+                                            
+                                            {item.hasPart===true && <h1><CheckCircleOutlineIcon /> 참여함</h1>}
+                                            {item.hasPart===false && <h2><CancelOutlinedIcon /> 미참여</h2>}
+                                            {item.hasPart!==undefined && <p>|</p>}
+                                            <Button disabled={item.hasPart===true} onClick={()=>onYesClick(item.uid, item.hasPart)}>참여함</Button>
+                                            <Button style={item.hasPart===true ?{color:"red"} : {}} disabled={item.hasPart===false} onClick={()=>onNoClick(item.uid, item.hasPart)}>미참여</Button>
+                                        </td>
                                 }
                             </tr>
                         )

@@ -9,7 +9,7 @@ const History = ({data}) => {
       {data && 
         <>
           <h1 style={{marginBottom:"5px"}}>기록</h1>
-          <div style={{overflowY:"scroll", maxHeight:"300px"}}>
+          <div style={{overflowY:"scroll", maxHeight:"160px"}}>
             {data.map((item, index) => {
               if(!isHistoryDetail){
                 if(index<10){

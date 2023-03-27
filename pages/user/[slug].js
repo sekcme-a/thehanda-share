@@ -31,6 +31,7 @@ const User = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
       if(localStorage.getItem("teamId")===null){
         alert("정상적인 경로로 진입해주세요.")
         router.push("/")
@@ -46,7 +47,7 @@ const User = () => {
 
     if(user && slug)
       fetchData()
-  }, [])
+  }, [slug])
 
   // const noAuthority = () => {
   //   return <NoAuthority uid={user.uid} teamName={team_name} isTeamName={isTeamName} />

@@ -49,6 +49,8 @@ const Result = () => {
   const [isSendingAlarm, setIsSendingAlarm] = useState(false)
 
   const [hasProgramSurvey, setHasProgramSurvey] = useState(false)
+
+  const [isChildrenMode, setIsChildrenMode] = useState(false)
   
   useEffect(()=>{
     let columnsList = [ 
@@ -63,47 +65,96 @@ const Result = () => {
     sessionStorage.setItem("teamId", team_id)
 
     const fetchData = async() => {
-      await db.collection("team_admin").doc(team_id).collection("result").doc(id).collection("users").orderBy("createdAt", "desc").get().then((query)=>{
-        let rowsList = []
-        query.docs.map(async(doc, index)=>{
-          const userDoc = await db.collection("user").doc(doc.id).get()
-          let tempDataList = {
-            uid: userDoc.id, 
-            name: userDoc.data().realName, 
-            phone: userDoc.data().phoneNumber, 
-            token: userDoc.data().pushToken, 
-            isAlarmOn: userDoc.data().isAlarmOn, 
-            alarmSetting: userDoc.data().alarmSetting
-          }
-          
-          doc.data().data.map((item, index)=>{
-            if (typeof (item.value) === "object") {
-              if (item.value.length !== undefined) {
-                let tempString = ""
-                item.value.map((asdf, index) => {
-                  if (index === 0)
-                    tempString = asdf
-                  else
-                    tempString = `${tempString},${asdf}`
-                })
-                console.log(tempString)
-                tempDataList = { ...tempDataList, [item.id]: item.value }
+      await db.collection("team_admin")
+      .doc(team_id)
+      .collection("result")
+      .doc(id)
+      .collection("users")
+      .orderBy("createdAt", "desc")
+      .get()
+      .then(async (query) => {
+        const rowsList = [];
+    
+        await Promise.all(
+          query.docs.map(async (doc) => {
+            const userDoc = await db.collection("user").doc(doc.id).get();
+            const tempDataList = {
+              relation: "신청자",
+              uid: userDoc.id,
+              name: userDoc.data().realName,
+              phone: userDoc.data().phoneNumber,
+              token: userDoc.data().pushToken,
+              isAlarmOn: userDoc.data().isAlarmOn,
+              alarmSetting: userDoc.data().alarmSetting,
+            };
+    
+            doc.data().data.forEach((item) => {
+              if (typeof item.value === "object") {
+                if (Array.isArray(item.value)) {
+                  tempDataList[item.id] = item.value.join(",");
+                } else {
+                  tempDataList[item.id] = item.value
+                    .toDate()
+                    .toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })
+                    .replace(/\s/g, "");
+                }
+              } else {
+                tempDataList[item.id] = item.value;
               }
-              else
-              tempDataList = { ...tempDataList, [item.id]: item.value.toDate().toLocaleString('ko-KR').replace(/\s/g, '') }
-            } else
-              tempDataList = { ...tempDataList, [item.id]: item.value }
-
-            
-            
+            });
+    
+            rowsList.push(tempDataList);
+    
+            // 자녀프로그램일시, 자녀들의 데이터도 받아옴
+            if (doc.data().selectedMembers) {
+              setIsChildrenMode(true)
+              await Promise.all(
+                doc.data().selectedMembers.map(async (member) => {
+                  const memberDoc = await db.collection("user").doc(member).get();
+                  const filtered = userDoc.data().family.filter(item=>item.uid === member)
+                  let relation = ""
+                  switch(filtered[0].relation){
+                    case "me":
+                      relation = "본인"
+                      break;
+                    case "children":
+                      relation="자녀"
+                      break;
+                    case "spouse":
+                      relation="배우자"
+                      break;
+                    case "parents":
+                      relation="부모"
+                      break;
+                  }
+                  console.log(relation)
+                  if (memberDoc.exists) {
+                    rowsList.push({
+                      relation: relation,
+                      uid: memberDoc.id,
+                      name: memberDoc.data().realName,
+                      phone: memberDoc.data().phoneNumber,
+                      token: memberDoc.data().pushToken,
+                      isAlarmOn: memberDoc.data().isAlarmOn,
+                      alarmSetting: memberDoc.data().alarmSetting,
+                    });
+                  }
+                })
+              );
+            }
           })
-          rowsList = [...rowsList,tempDataList]
-          // rowsList = [...rowsList, tempDataList]
-          setData(rowsList)
-        })
-      })
+        );
+        console.log(rowsList)
+        setData([...rowsList]);
+      });
+    
 
       await db.collection("team").doc(team_id).collection(type).doc(id).get().then((doc) => {
+
+        if(doc.data().type==="children" || doc.data().type==="family"){
+          columnsList = [{key:"relation", label:"관계"}, ...columnsList]
+        }
+
         setTitle(doc.data().title)
         setAlarmText(`[${doc.data().title}] 프로그램이 내일 시작됩니다.`)
           doc.data().formData.map((item) => {
@@ -177,6 +228,7 @@ const Result = () => {
         return item.token
     })
     const uniqueTokenList = [...new Set(tokenList)]
+    console.log(uniqueTokenList)
     setIsSendingAlarm(true)
     Promise.all(
       uniqueTokenList.map(async (token) => {
@@ -232,7 +284,7 @@ const Result = () => {
           </CSVLink>
         </Button> 
         <div style={{marginTop:"10px"}}/>
-        <CSVTable headers={headers} data={data} type={type} docId={id}/>
+        <CSVTable headers={headers} data={data} type={type} docId={id} isChildrenMode={isChildrenMode}/>
 
 
         <div style={{marginTop:"50px"}} />
@@ -251,10 +303,10 @@ const Result = () => {
                 엑셀로 추출
               </CSVLink>
             </Button> 
-            <div style={{marginTop:"10px"}}/>
-            <CSVTable headers={headers} data={data} type={type} docId={id}/>
+            {/* <div style={{marginTop:"10px"}}/>
+            <CSVTable headers={headers} data={data} type={type} docId={id} isChildrenMode={isChildrenMode}/> */}
             <div style={{marginTop:"15px"}}/>
-            <CSVTable headers={headers2} data={data2} type="programSurveys" docId={id}/>
+            <CSVTable headers={headers2} data={data2} type="programSurveys" docId={id} isChildrenMode={isChildrenMode}/>
           </>
         }
         </>
@@ -273,7 +325,7 @@ const Result = () => {
           <DialogTitle>알림 보내기</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              알림 문구는 해당 프로그램에 참여한 사용자에게만 전달됩니다. 너무 긴 알림을 보내지 않도록 유의해 주세요.
+              알림 문구는 해당 프로그램에 신청한 사용자에게만 전달됩니다. 너무 긴 알림을 보내지 않도록 유의해 주세요.
             </DialogContentText>
             <TextField
               autoFocus

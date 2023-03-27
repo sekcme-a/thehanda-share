@@ -29,7 +29,12 @@ const ProgramCondition = () => {
       setPublishStartSoonList([...tempList2])
       
       const querySnapshot3 = await db.collection("team").doc(teamId).collection("programs").where("isMain","==",true).get()
-      const tempList3 = querySnapshot3.docs.map((doc)=>({id: doc.id, data:doc.data()}))
+      const tempList3 = querySnapshot3.docs.map((doc)=>{
+        console.log(doc.data().condition)
+        if(doc.data().condition==="confirm")
+          return ({id: doc.id, data:doc.data()})
+      }).filter(Boolean)
+      console.log(tempList3)
       setMainList([...tempList3])
     }
     fetchData()
@@ -118,7 +123,7 @@ const ProgramCondition = () => {
       </div>
 
 
-      <h1>게재중 & 마감전 프로그램</h1>
+      <h1 style={{marginTop:"90px"}}>게재중 & 마감전 프로그램</h1>
       <div className={styles.content_container}>
         {beforeDeadlineList.length===0 &&
             <h2>아직 게재중 & 마감전 프로그램이 없습니다.</h2>
@@ -149,7 +154,7 @@ const ProgramCondition = () => {
       </div>
 
 
-      <h1 style={{marginTop:"50px"}}>프로그램 시작일 임박 프로그램</h1>
+      <h1 style={{marginTop:"90px"}}>프로그램 시작일 임박 프로그램</h1>
       <div className={styles.content_container}>
         {publishStartSoonList.length===0 &&
           <h2>아직 시작일 임박 프로그램이 없습니다.</h2>

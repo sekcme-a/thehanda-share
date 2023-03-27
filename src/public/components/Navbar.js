@@ -32,6 +32,7 @@ import EditNotificationsOutlinedIcon from '@mui/icons-material/EditNotifications
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 
 const Navbar = () => {
   const router = useRouter()
@@ -135,7 +136,7 @@ const Navbar = () => {
       </ListItemButton>
       <Collapse in={open3} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItemButton onClick={()=>onClick("programCondition")}>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("programCondition")}>
             <ListItemIcon>
               <AccessTimeOutlinedIcon />
             </ListItemIcon>
@@ -143,7 +144,7 @@ const Navbar = () => {
           </ListItemButton>
         </List>
         <List component="div" disablePadding>
-          <ListItemButton onClick={()=>onClick("program")}>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("program")}>
             <ListItemIcon>
               <EditRoundedIcon />
             </ListItemIcon>
@@ -151,7 +152,7 @@ const Navbar = () => {
           </ListItemButton>
         </List>
         <List component="div" disablePadding>
-          <ListItemButton onClick={()=>onClick("survey")}>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("survey")}>
             <ListItemIcon>
               <EditRoundedIcon />
             </ListItemIcon>
@@ -159,7 +160,7 @@ const Navbar = () => {
           </ListItemButton>
         </List>
         <List component="div" disablePadding>
-          <ListItemButton onClick={()=>onClick("anouncement")}>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("anouncement")}>
             <ListItemIcon>
               <CampaignOutlinedIcon />
             </ListItemIcon>
@@ -168,7 +169,7 @@ const Navbar = () => {
         </List>
         {(userData.roles[1]==="super" || userData.roles[1]==="high") &&
           <List component="div" disablePadding>
-            <ListItemButton onClick={()=>onClick("confirmProgram")}>
+            <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("confirmProgram")}>
               <ListItemIcon>
                 <RuleRoundedIcon />
               </ListItemIcon>
@@ -178,7 +179,7 @@ const Navbar = () => {
         }
         {(userData.roles[1]==="super" || userData.roles[1]==="high") &&
           <List component="div" disablePadding>
-            <ListItemButton onClick={()=>onClick("confirmSurvey")}>
+            <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("confirmSurvey")}>
               <ListItemIcon>
                 <RuleRoundedIcon />
               </ListItemIcon>
@@ -188,7 +189,7 @@ const Navbar = () => {
         }
         {(userData.roles[1]==="super" || userData.roles[1]==="high") &&
           <List component="div" disablePadding>
-            <ListItemButton onClick={()=>onClick("confirmAnouncement")}>
+            <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("confirmAnouncement")}>
               <ListItemIcon>
                 <RuleRoundedIcon />
               </ListItemIcon>
@@ -212,7 +213,7 @@ const Navbar = () => {
       <Collapse in={open4} timeout="auto" unmountOnExit>
 
         <List component="div" disablePadding>
-          <ListItemButton onClick={()=>onClick("section/program")}>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("section/program")}>
             <ListItemIcon>
               <SnippetFolderOutlinedIcon />
             </ListItemIcon>
@@ -221,7 +222,7 @@ const Navbar = () => {
         </List>
 
         <List component="div" disablePadding>
-          <ListItemButton onClick={()=>onClick("section/survey")}>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("section/survey")}>
             <ListItemIcon>
               <SnippetFolderOutlinedIcon />
             </ListItemIcon>
@@ -230,7 +231,7 @@ const Navbar = () => {
         </List>
 
         <List component="div" disablePadding>
-          <ListItemButton onClick={()=>onClick("section/anouncement")}>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("section/anouncement")}>
             <ListItemIcon>
               <SnippetFolderOutlinedIcon />
             </ListItemIcon>
@@ -242,6 +243,13 @@ const Navbar = () => {
       </Collapse>
       </>
     }
+
+          {/* <ListItemButton onClick={()=>onClick("contact")}>
+            <ListItemIcon>
+              <FamilyRestroomIcon />
+            </ListItemIcon>
+            <ListItemText primary="가족 구성원 관리" />
+          </ListItemButton> */}
 
           <ListItemButton onClick={()=>onClick("contact")}>
             <ListItemIcon>

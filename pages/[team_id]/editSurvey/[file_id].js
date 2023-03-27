@@ -193,7 +193,7 @@ const EditProgram = () => {
   }
 
   const onCancelClick = () => {
-    if(confirm("게재취소하시겠습니까?\n(설문조사 결과 데이터가 삭제됩니다.)")){
+    if(confirm("게재취소하시겠습니까?")){
       db.collection("team").doc(team_id).collection("surveys").doc(file_id).update({
         condition: "unconfirm",
         history: [{type:"cancelDeploy", date: new Date(), text:`"${userData.displayName}" 님에 의해 게재 취소되었습니다.`}, ...postValues.history]

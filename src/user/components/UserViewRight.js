@@ -26,8 +26,12 @@ import UserViewOverview from './UserViewOverview'
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 
 import Comments from './Comments'
+import Family from "./Family"
+import Memo from "./Memo"
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -44,9 +48,11 @@ const UserViewRight = (props) => {
   const [value, setValue] = useState('overview')
   const [timeline, setTimeline] = useState([])
   const {teamId} = useData()
+  const [family, setFamily] = useState([])
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
+  const [memo, setMemo] = useState([])
 
   const [alarmValues, setAlarmValues] = useState({
     marriage: false,
@@ -81,7 +87,14 @@ const UserViewRight = (props) => {
     db.collection("user").doc(props.uid).get().then((doc) => {
       if (doc.data().centerAlarm) 
         setAlarmValues(doc.data().centerAlarm)
-      
+      if(doc.data().family)
+        setFamily(doc.data().family)
+    })
+    db.collection("team_admin").doc(teamId).collection("users").doc(props.uid).collection("memo").orderBy("createdAt","desc").limit(20).get().then((query)=>{
+      if(!query.empty){
+        const temp = query.docs.map(doc=>({...doc.data()})) 
+        setMemo(temp)
+      }
     })
   },[])
 
@@ -94,9 +107,11 @@ const UserViewRight = (props) => {
         aria-label='forced scroll tabs example'
       >
         <Tab value='overview' label='Overview' icon={<AccountOutline />} />
+        <Tab value='family' label='Family' icon={<FamilyRestroomIcon />} />
         <Tab value='timeline' label='Timeline' icon={<TimelineIcon />} />
         {/* <Tab value='alarmSetting' label='AlarmSetting' icon={<AddAlertIcon />} /> */}
         <Tab value='comments' label="Comments" icon={<SummarizeOutlinedIcon />} />
+        <Tab value='memo' label="Memo" icon={<DriveFileRenameOutlineIcon />} />
         {/* <Tab value='security' label='Security' icon={<LockOutline />} />
         <Tab value='billing-plan' label='Billing & Plan' icon={<BookmarkOutline />} />
         <Tab value='notification' label='Notification' icon={<BellOutline />} />
@@ -114,6 +129,22 @@ const UserViewRight = (props) => {
               timeline={timeline} uid={props.uid} />
           </Card>
         </TabPanel>
+
+
+        <TabPanel sx={{ p: 0 }} value='family'>
+          <Card sx={{padding: "10px 20px"}}>
+            <Family family={family}/>
+          </Card>
+        </TabPanel>
+
+
+        <TabPanel sx={{ p: 0 }} value='memo'>
+          <Card sx={{padding: "10px 20px"}}>
+            <Memo memo={memo} uid={props.uid}/>
+          </Card>
+        </TabPanel>
+
+
         <TabPanel sx={{ p: 0 }} value='alarmSetting'>
           <Card sx={{padding: "10px 20px"}}>
                   <div style={{marginTop: "15px"}}>

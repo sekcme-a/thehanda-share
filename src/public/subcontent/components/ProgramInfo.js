@@ -11,6 +11,8 @@ import AvatarGroup from '@mui/material/AvatarGroup';
 import Tooltip from '@mui/material/Tooltip';
 import History from "./History"
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import { Dialog } from "@mui/material"
+import QRCodeGenerator from "src/public/components/QRCodeGenerator"
 
 const ProgramInfo = ({subContent}) => {
   const {teamId, setSubContent, user} = useData()
@@ -20,6 +22,8 @@ const ProgramInfo = ({subContent}) => {
   const [author, setAuthor] = useState()
   const [team, setTeam] = useState([])
   const [isHistoryDetail, setIsHistoryDetail] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false)
+  const [isCopied, setIsCopied] = useState(false);
 
 
   useEffect(()=>{
@@ -60,9 +64,20 @@ const ProgramInfo = ({subContent}) => {
     router.push(`/${teamId}/result/${subContent.type}/${subContent.id}`)
   }
 
-  // const onAddAuthorClick = () => {
+  const onShareClick = () => {
+    setOpenDialog(true)
+  }
 
-  // }
+  const onURLCopyClick = async() => {
+    
+    try {
+      await navigator.clipboard.writeText(`https://dahanda.netlify.app/preview/${teamId}/${subContent.id}`);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000); // Reset state after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  }
 
   if(isLoading)
     return(
@@ -108,7 +123,25 @@ const ProgramInfo = ({subContent}) => {
       {data.condition==="confirm" && data.publishStartDate <= new Date() &&
       <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "15px", backgroundColor:"olivedrab"}} size="small" onClick={onResultClick}>결과보기</Button>
       }
+      {data.condition==="confirm" && 
+      <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "15px", backgroundColor:"#007aff"}} size="small" onClick={onShareClick}>배포하기</Button>
+      }
       {/* <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "15px", backgroundColor:"rgb(155,144,121)"}} size="small" onClick={onResultClick}><NotificationsNoneIcon />알림보내기</Button> */}
+      <Dialog open={openDialog} onClose={()=>{setOpenDialog(false); setIsCopied(false)}}>
+        <div className={styles.dialog_container}>
+          <div style={{display:"flex", justifyContent:"center"}}>
+            <QRCodeGenerator url={`https://dahanda.netlify.app/preview/${teamId}/${subContent.id}`}/>
+          </div>
+          <div className={styles.url_container}>
+            <h2 style={{marginBottom:"20px"}}>해당 QR코드를 스크린샷으로 저장해 배포하세요!</h2>
+            <p style={{fontWeight:"bold"}}>배포 URL</p>
+            <div className={styles.url_text}>
+              <h1>{`https://dahanda.netlify.app/preview/${teamId}/${subContent.id}`}</h1>
+              <Button size="small" onClick={onURLCopyClick}>{isCopied ? "복사되었습니다." : "클릭하여 URL복사"}</Button>
+            </div>
+          </div>
+        </div>
+      </Dialog>
     </div>
   )
 }

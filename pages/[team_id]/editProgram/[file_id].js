@@ -47,6 +47,7 @@ const EditProgram = () => {
     history: [],
     author: userData.uid,
     team: [userData.uid],
+    type: "common",
     sections: [],
     title: "",
     subtitle: "",
@@ -303,7 +304,7 @@ const EditProgram = () => {
   }
 
   const onCancelClick = () => {
-    if(confirm("게재취소하시겠습니까?\n(프로그램 결과 데이터가 삭제됩니다.)")){
+    if(confirm("게재취소하시겠습니까?")){
       db.collection("team").doc(team_id).collection("programs").doc(file_id).update({
         condition: "unconfirm",
         history: [{type:"cancelDeploy", date: new Date(), text:`"${userData.displayName}" 님에 의해 게재 취소되었습니다.`}, ...postValues.history]

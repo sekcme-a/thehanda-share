@@ -60,3 +60,9 @@
 .info_item_container .item h1{
   width: 50px !important
 }
+
+.item2{
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 80px;
+}
