@@ -243,7 +243,7 @@ const Contact = () => {
                   </p>
                 </div>
                 
-                {!sortedData[selectedIndex]?.reply ? 
+                {sortedData[selectedIndex]?.reply ? 
                   <div className={styles.content} style={{marginTop: "25px"}}>
                     답장 전송됨
                     <TextField multiline fullWidth maxRows={12} style={{marginTop:"15px", marginBottom:"10px"}} 
