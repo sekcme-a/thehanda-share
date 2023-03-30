@@ -12,12 +12,16 @@ const Newteam = () => {
         setValues({...values, [prop]: event.target.value})
     }
 
-    const onAddClick = () => {
+    const onAddClick = async() => {
         if(values.id!=="" && values.name!=="" && values.uid!==""){
-            db.collection("team_admin").doc(values.id).get().then((doc)=>{
+            db.collection("team_admin").doc(values.id).get().then(async(doc)=>{
                 if(doc.exists){
                     alert("이미 있는 팀ID입니다.")
                 } else{
+                    await db.collection("team").doc(values.id).set({
+                        id: values.id,
+                        teamName: values.teamName,
+                    })
                     db.collection("team_admin").doc(values.id).set({
                         id: values.id,
                         teamName: values.name,
@@ -25,7 +29,7 @@ const Newteam = () => {
                     }).then(()=>{
                         db.collection("user").doc(values.uid).get().then((doc2)=>{
                             if(doc2.exists){
-                                db.collection("user").doc(values.uid).update({roles: [`admin_${values.id}`, `${values.id}_super`]}).then(()=>{
+                                db.collection("user").doc(values.uid).update({roles: [`admin_${values.id}`, `super`]}).then(()=>{
                                     alert("추가되었습니다.")
                                 })
                             }else{

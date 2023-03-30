@@ -163,7 +163,6 @@ const Editor = (props) => {
     else
       return true
   }
-  console.log(props.textData)
   if(props.textData)
   return (
     <>

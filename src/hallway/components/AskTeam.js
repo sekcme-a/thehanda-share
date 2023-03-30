@@ -96,7 +96,7 @@ const AskTeam = (props) => {
             </Typography>
             <div style={{display: "flex", alignItems:"center"}}>
               <FormControl variant="standard" sx={{mb: 3}}>
-                <InputLabel htmlFor="component-helper">TEAM</InputLabel>
+                <InputLabel htmlFor="component-helper">TEAM ID</InputLabel>
                 <Input
                   id="component-helper"
                   value={team}
@@ -105,7 +105,7 @@ const AskTeam = (props) => {
                   aria-describedby="component-helper-text"
                 />
                 <FormHelperText id="component-helper-text">
-                  TEAM명을 작성해주세요.
+                  TEAM ID를 작성해주세요.
                 </FormHelperText>
               </FormControl>
               <Button variant="text" sx={{ml: 1, mt: -3}} onClick={onJoinClick}>참가</Button>

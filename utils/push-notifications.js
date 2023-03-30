@@ -3,8 +3,9 @@ import { Expo } from 'expo-server-sdk';
 const expo = new Expo();
 
 
-export const sendPushNotification = async (pushToken, message) => {
+export const sendPushNotification = async (pushToken,title, message) => {
   // Check if the push token is valid
+  console.log("asfd")
   console.log(pushToken)
   console.log(message)
   if (!Expo.isExpoPushToken(pushToken)) {
@@ -16,15 +17,17 @@ export const sendPushNotification = async (pushToken, message) => {
   const notification = {
     to: pushToken,
     sound: 'default',
-    title: 'New message',
+    title: title,
     body: message,
     data: { message },
   };
 
   // Send the notification
   try {
-    const response = await expo.sendPushNotificationsAsync([notification]);
-    console.log("RESPOSE", response);
+    if(message){
+      const response = await expo.sendPushNotificationsAsync([notification]);
+      console.log("RESPOSE", response);
+    }
   } catch (error) {
     console.error(error);
   }

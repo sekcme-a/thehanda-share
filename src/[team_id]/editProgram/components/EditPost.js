@@ -17,6 +17,8 @@ import { Button } from "@mui/material"
 
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 
+import { firestore as db } from "firebase/firebase"
+
 
 //textfield 디자인
 const textfieldStyle = {style:{fontSize:"14px"}}
@@ -59,11 +61,25 @@ const EditPost = ({values, setValues, sections, fileId,type}) => {
   }
 
   useEffect(()=>{
-    const sectionsNameArray = sections.map(section => section.name);
-    setSectionItems(sectionsNameArray)
 
-    const selectedSectionNameArray = values.sections.map(section => section.name)
-    setSelectedSections(selectedSectionNameArray)
+    const fetchSection = async() => {
+      const sectionsNameArray = sections.map(section=>section.name)
+      setSectionItems(sectionsNameArray)
+  
+      const selectedSectionNameArray = await Promise.all(values.sections.map(section => {
+        return db.collection("team").doc(teamId).collection("section").doc(type).get()
+          .then(sectionDoc => {
+            console.log(section.id)
+            if (sectionDoc.data().data.some(item => item.id === section.id)) {
+              return section.name;
+            }
+          })
+      }).filter(Boolean));
+      console.log(selectedSectionNameArray)
+      if(selectedSectionNameArray[0])
+        setSelectedSections(selectedSectionNameArray)
+    }
+    fetchSection()
   },[])
 
   //Handle section_select value************

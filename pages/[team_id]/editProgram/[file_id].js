@@ -333,7 +333,7 @@ const EditProgram = () => {
 
             <div className={styles.steps_container}>
 
-              {step === 0 && <EditPost values={postValues} setValues={setPostValues} sections={sections} fileId={file_id}/>}
+              {step === 0 && <EditPost values={postValues} setValues={setPostValues} sections={sections} fileId={file_id} teamId={team_id} type="program"/>}
               {step === 1 && <CustomForm formData={postValues.formData} setFormData={handleFormData} teamId={team_id} contentMode={true} id={file_id}/>}
               {step === 2 && 
                 <div className={styles.submit_content_container}>
@@ -361,7 +361,7 @@ const EditProgram = () => {
                       />
                     </LocalizationProvider>
 
-                    <div style={{width:"15px"}} />
+                    <div style={{width:"15px", marginTop:"15px"}} />
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <MobileDateTimePicker
                         label="프로그램 시작일을 선택해주세요."

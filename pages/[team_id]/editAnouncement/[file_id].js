@@ -82,7 +82,7 @@ const EditAnouncement = () => {
     const fetchData = async () => {
       setTeamId(team_id)
       const sectionDoc = await db.collection("team").doc(team_id).collection("section").doc("anouncement").get()
-      if(sectionDoc.exists)
+      if(sectionDoc.exists && sectionDoc.data().data.length>0)
         setSections(sectionDoc.data().data)
       else{
         alert("아직 섹션이 없습니다. 프로그램 섹션을 1개 이상 추가한 후 다시 시도해주세요.")
@@ -98,7 +98,7 @@ const EditAnouncement = () => {
       setSelectedSections(selectedSectionNameArray)
       }
       console.log(postDoc.data())
-      const sectionsNameArray = sectionDoc.data().data.map(section => section.name);
+      const sectionsNameArray = sectionDoc.data()?.data.map(section => section.name);
       setSectionItems(sectionsNameArray)
 
       setIsLoading(false)
@@ -259,7 +259,7 @@ const EditAnouncement = () => {
               {step === 0 && 
                 <div>
                   <div className={styles.item_container}>
-                    <TextField id="standard-basic" label="제목" variant="standard" value={postValues.title} onChange={onPostValuesChange("title")} />
+                    <TextField id="standard-basic" label="제목" variant="standard" value={postValues.title} onChange={onPostValuesChange("title")} type="anouncement"/>
                   </div>
                   <div className={styles.item_container}>
                     <TextField id="standard-basic" label="부제목" variant="standard" value={postValues.subtitle} onChange={onPostValuesChange("subtitle")} />

@@ -153,7 +153,7 @@ const Contact = () => {
         db.collection("user").doc(uid).get().then(async(doc) => {
           console.log(doc.data())
           try {
-            const result = await sendNotification(doc.data().pushToken, "문의하신 내용에 답장이 도착했습니다.");
+            const result = await sendNotification(doc.data().pushToken,"문의답장 알림","문의하신 내용에 답장이 도착했습니다.");
             alert("성공적으로 보냈습니다.")
           } catch (e) {
             console.log(e);
@@ -243,7 +243,7 @@ const Contact = () => {
                   </p>
                 </div>
                 
-                {sortedData[selectedIndex]?.reply ? 
+                {!sortedData[selectedIndex]?.reply ? 
                   <div className={styles.content} style={{marginTop: "25px"}}>
                     답장 전송됨
                     <TextField multiline fullWidth maxRows={12} style={{marginTop:"15px", marginBottom:"10px"}} 

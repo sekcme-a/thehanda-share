@@ -56,14 +56,14 @@ export default function SelectMultipleChip({title, items, selectedItems, setSele
           input={<OutlinedInput id="select-multiple-chip" label={title} />}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selected.map((value) => (
+              {selected?.map((value) => (
                 <Chip key={value} label={value} />
               ))}
             </Box>
           )}
           MenuProps={MenuProps}
         >
-          {items.map((item) => (
+          {items?.map((item) => (
             <MenuItem
               key={item}
               value={item}

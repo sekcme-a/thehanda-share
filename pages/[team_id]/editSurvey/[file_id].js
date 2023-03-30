@@ -69,7 +69,8 @@ const EditProgram = () => {
     const fetchData = async () => {
       setTeamId(team_id)
       const sectionDoc = await db.collection("team").doc(team_id).collection("section").doc("survey").get()
-      if(sectionDoc.exists)
+      console.log("asdf",sectionDoc.data())
+      if(sectionDoc.exists && sectionDoc.data().data.length>0)
         setSections(sectionDoc.data().data)
       else{
         alert("아직 섹션이 없습니다. 설문조사 섹션을 1개 이상 추가한 후 다시 시도해주세요.")
