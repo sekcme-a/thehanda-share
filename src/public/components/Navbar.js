@@ -33,6 +33,7 @@ import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsAc
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
+import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 
 const Navbar = () => {
   const router = useRouter()
@@ -122,6 +123,14 @@ const Navbar = () => {
               <Diversity3Icon />
             </ListItemIcon>
             <ListItemText primary="구성원 관리" />
+          </ListItemButton>
+        </List>
+        <List component="div" disablePadding>
+          <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("teamProfile")}>
+            <ListItemIcon>
+              <AccountBoxOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="팀 프로필" />
           </ListItemButton>
         </List>
         </Collapse>

@@ -13,6 +13,7 @@ import Card from '@mui/material/Card'
 import Timeline from "./Timeline"
 
 import Button from '@mui/material/Button';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 
 
 import AddAlertIcon from '@mui/icons-material/AddAlert';
@@ -32,6 +33,7 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import Comments from './Comments'
 import Family from "./Family"
 import Memo from "./Memo"
+import ChatView from "./ChatView"
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -107,11 +109,13 @@ const UserViewRight = (props) => {
         aria-label='forced scroll tabs example'
       >
         <Tab value='overview' label='Overview' icon={<AccountOutline />} />
+        <Tab value='chat' label="Chat" icon={<ChatOutlinedIcon />} />
         <Tab value='family' label='Family' icon={<FamilyRestroomIcon />} />
         <Tab value='timeline' label='Timeline' icon={<TimelineIcon />} />
         {/* <Tab value='alarmSetting' label='AlarmSetting' icon={<AddAlertIcon />} /> */}
         <Tab value='comments' label="Comments" icon={<SummarizeOutlinedIcon />} />
         <Tab value='memo' label="Memo" icon={<DriveFileRenameOutlineIcon />} />
+        
         {/* <Tab value='security' label='Security' icon={<LockOutline />} />
         <Tab value='billing-plan' label='Billing & Plan' icon={<BookmarkOutline />} />
         <Tab value='notification' label='Notification' icon={<BellOutline />} />
@@ -123,6 +127,14 @@ const UserViewRight = (props) => {
             <UserViewOverview profile_settings={props.profile_settings} additional_data={props.additional_data} />
           </Card>
         </TabPanel>
+
+        <TabPanel sx={{ p: 0 }} value='chat'>
+          <Card sx={{padding: "10px 20px"}}>
+            <ChatView uid={props.uid} teamId={teamId} />
+          </Card>
+        </TabPanel>
+
+
         <TabPanel sx={{ p: 0 }} value='timeline'>
           <Card sx={{padding: "10px 20px"}}>
             <Timeline

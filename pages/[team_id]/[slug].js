@@ -25,6 +25,7 @@ import ProgramCondition from "src/[team_id]/programCondition/components/ProgramC
 import Contact from "src/[team_id]/contact/components/Contact"
 
 import SubContent from "src/public/subcontent/components/SubContent"
+import TeamProfile from "src/[team_id]/teamProfile/TeamProfile"
 
 const Index = () => {
     const router = useRouter()
@@ -81,6 +82,7 @@ const Index = () => {
                 slug==="confirmAnouncement" ? <ConfirmAnouncement /> : 
                 slug==="programCondition" ? <ProgramCondition /> :
                 slug==="contact" ? <Contact /> :
+                slug==="teamProfile" ? <TeamProfile /> :
                 <></>
             }
           </div>

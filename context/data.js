@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from "react";
+import { firestore as db } from "firebase/firebase";
 
 const dataContext = createContext()
 
@@ -20,6 +21,24 @@ export function DataProvider(props){
     //for subcontent
     const [subContent, setSubContent] = useState({type:"index"})
 
+    //team profile
+    const [teamProfile, setTeamProfile] = useState("")
+
+    useEffect(()=>{
+        const fetchData = async() => {
+            if(teamId!==""){
+                db.collection("team").doc(teamId).get().then((doc) => {
+                    if(doc.exists){
+                        setTeamProfile(doc.data().profile)
+                        setTeamName(doc.data().teamName)
+                    }
+
+                })
+            }
+        }
+        fetchData() 
+    },[teamId])
+
     const value = {
         user,
         userData,
@@ -36,7 +55,9 @@ export function DataProvider(props){
         userList,
         setUserList,
         userListCardData,
-        setUserListCardData
+        setUserListCardData,
+        teamProfile,
+        setTeamProfile
     }
 
     return <dataContext.Provider value={value} {...props} />
