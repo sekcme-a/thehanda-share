@@ -24,6 +24,8 @@ const Memo = ({memo, uid}) => {
       createdAt: new Date(),
       uid: user.uid,
       text: text,
+    }).then(()=>{
+      alert("저장되었습니다.")
     })
   }
 

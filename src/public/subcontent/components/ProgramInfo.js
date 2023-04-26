@@ -133,7 +133,7 @@ const ProgramInfo = ({subContent}) => {
             <QRCodeGenerator url={`https://dahanda.netlify.app/preview/${teamId}/${subContent.id}`}/>
           </div>
           <div className={styles.url_container}>
-            <h2 style={{marginBottom:"20px"}}>해당 QR코드를 스크린샷으로 저장해 배포하세요!</h2>
+            <h2 style={{marginBottom:"20px"}}>해당 QR코드의 이미지를 저장해 배포하세요!</h2>
             <p style={{fontWeight:"bold"}}>배포 URL</p>
             <div className={styles.url_text}>
               <h1>{`https://dahanda.netlify.app/preview/${teamId}/${subContent.id}`}</h1>
