@@ -51,10 +51,11 @@ const ShowArticle = ({createMarkup, data, teamName, id, type}) => {
   // if(text)
   return (
     <div className={styles.main_container}>
-      <HeaderRightClose title="공지사항"/>
+      {/* <HeaderRightClose title="공지사항"/> */}
       <div className={styles.content_container}>
         <h1>{data.title}</h1>
         <h2>{data.subtitle}</h2>
+        <h3>게시일:  {data.publishStartDate?.toDate().toLocaleString('ko-KR').replace(/\s/g, '')}</h3>
         {/* {type !== "anouncement" &&
           <p>{text.participation_deadline} : {language === "ko" ?
             data.deadline?.toDate().toLocaleString('ko-KR').replace(/\s/g, '')

@@ -20,6 +20,11 @@ import { CellphoneMessageOff } from "mdi-material-ui"
 import { Switch } from "@mui/material"
 import Editor from 'src/public/components/Editor';
 import SelectMultipleChip from "src/mui/SelectMultipleChip"
+
+import { Backdrop } from "@mui/material"
+import Form from "src/form/Form"
+import ShowArticle from "src/public/components/ShowArticle"
+import SubContent from "src/public/subcontent/components/SubContent"
 //stepper
 const data = [
   "게시물 작성",
@@ -33,6 +38,7 @@ const EditAnouncement = () => {
   const [sectionItems, setSectionItems] = useState([])
   const [selectedSections, setSelectedSections] = useState([])
   const [step, setStep] = useState(0)
+  const [openBackdrop, setOpenBackdrop] = useState(false)
 
   const handleStep = (num) => {setStep(num)}
 
@@ -110,7 +116,7 @@ const EditAnouncement = () => {
   },[])
 
   const onPreviewClick = () => {
-
+    setOpenBackdrop(true)
   }
   const onPreviousClick = () => {setStep(step-1)}
   const onNextClick = () => {setStep(step+1)}
@@ -144,8 +150,20 @@ const EditAnouncement = () => {
     }
 
     
-    const location = sessionStorage.getItem("prevAnouncementLocId").split("/")
-    console.log(sessionStorage.getItem("prevAnouncementLocId").split("/"))
+    let location = sessionStorage.getItem("prevAnouncementLocId").split("/")
+    //현재 위치가 루트폴더가 아니라면 폴더들을 탐색해 현재 위치가 존재하는지 확인해야함
+    if(location.length>1){
+    //해당 프로그램을 저장하려는 location경로가 없는 경로라면(해당 프로그램을 편집할때 다른 유저가 해당 폴더를 삭제한 경우 보완) 루트위치에 저장.
+      const folderLocationDoc = await db.collection("team_admin").doc(team_id).collection("folders").doc(location[location.length-1]).get()
+      if(!folderLocationDoc.exists){
+        location = ["anouncement"]
+        sessionStorage.setItem("prevAnouncementLoc", "ANOUNCEMENT")
+        sessionStorage.setItem("prevAnouncementLocId", "anouncement")
+        
+        if(!confirm("현재의 폴더 경로가 삭제되었습니다.\n(공지사항 편집중에 다른 유저가 해당 위치의 폴더를 삭제했을 가능성이 높습니다.)\n해당 공지사항을 최상단 경로에 저장하시겠습니까?"))
+          return;
+      }
+    }
     
     //query를 위해 sections의 id만 따로 빼줌
     const sectionsId = postValues.sections.map((post)=>post.id)
@@ -158,6 +176,7 @@ const EditAnouncement = () => {
         history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
+        location: location[location.length-1]
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })
@@ -235,6 +254,10 @@ const EditAnouncement = () => {
         alert("게재취소되었습니다.")
       })
     }
+  }
+
+  const createMarkup = () => {
+    return {__html: postValues.textData}
   }
 
 
@@ -329,10 +352,22 @@ const EditAnouncement = () => {
 
 
           <div className={styles.sub_content_container}>
-  
+            {/* <SubContent /> */}
           </div>
         </div>
       </div>
+      <Backdrop
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackdrop}
+        onClick={()=>setOpenBackdrop(false)}
+      >
+         {step === 0  && 
+          <div onClick={() => {setTimeout(()=>{setOpenBackdrop(true)},10) }} style={{width:"400px", height:"700px", position:"absolute", backgroundColor:"white", overflow:"scroll", padding: "10px"}}>
+            {/* <ShowArticle data={postValues} teamName={team_id} id={file_id} type="anouncement" mode="preview" /> */}
+            <ShowArticle createMarkup={createMarkup} data={postValues} teamName={team_id} id={"id"} type="anouncement" />
+          </div>
+        }
+      </Backdrop>
     </>
   )
 }

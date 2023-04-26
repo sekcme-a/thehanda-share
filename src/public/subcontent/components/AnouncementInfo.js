@@ -5,6 +5,7 @@ import { CircularProgress } from "@mui/material"
 import useData from "context/data"
 import { Button } from "@mui/material"
 import { useRouter } from "next/router"
+import History from "./History"
 
 const SurveyInfo = ({subContent}) => {
   const {teamId, setSubContent} = useData()
@@ -50,6 +51,9 @@ const SurveyInfo = ({subContent}) => {
         {data.condition==="waitingForConfirm" && " 승인대기"}
       </h1>
       {data.condition==="confirm" && <h1>게제일: {data.publishStartDate.toDate().toLocaleString()}</h1>}
+
+      <div style={{marginTop:"20px"}}/>
+      {data && <History data={data.history} />}
 
       <Button fullWidth variant="contained" style={{fontSize:"16px", paddingTop:'0px', paddingBottom:"0px", marginTop: "30px"}} size="small" onClick={onEditClick}>편 집</Button>
     </div>

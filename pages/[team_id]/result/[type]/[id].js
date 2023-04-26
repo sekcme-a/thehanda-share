@@ -174,7 +174,11 @@ const Result = () => {
             let rowsList = []
             query.docs.map(async(doc, index)=>{
               const userDoc = await db.collection("user").doc(doc.id).get()
-              let tempDataList = {uid: doc.id, name: userDoc.data().realName, phone: userDoc.data().phoneNumber}
+              let tempDataList = {}
+              if(userDoc.exists)
+                tempDataList = {uid: doc.id, name: userDoc.data().realName, phone: userDoc.data().phoneNumber}
+              else
+                tempDataList = {uid: doc.id, name: "탈퇴한 사용자", phone: "-"}
               doc.data().data.map((item, index)=>{
                 if (typeof (item.value) === "object") {
                   if (item.value.length !== undefined) {
@@ -267,10 +271,12 @@ const Result = () => {
         {/* <ResultTable /> */}
         {!hasProgramSurvey && type==="programs" && <Button onClick={()=> router.push(`/${team_id}/programSurvey/${id}`)}  variant="contained" size="small">프로그램 설문조사 제작</Button>}
         <div style={{marginTop:"15px"}}/>
-        <Button onClick={()=>setIsDialogOpen(true)} variant="contained" size="small" style={{backgroundColor:"rgb(255, 153, 51)"}}>
-          <NotificationsNoneIcon style={{fontSize:"20px", marginRight:"4px"}} />
-          알림 보내기
-        </Button>
+        {type==="programs" &&
+          <Button onClick={()=>setIsDialogOpen(true)} variant="contained" size="small" style={{backgroundColor:"rgb(255, 153, 51)"}}>
+            <NotificationsNoneIcon style={{fontSize:"20px", marginRight:"4px"}} />
+            알림 보내기
+          </Button>
+        }
         <Button  variant="contained" size="small" style={{marginLeft:"20px", backgroundColor:"rgb(51, 153, 255)" }}>
           <ImportExportIcon style={{fontSize:"20px", marginRight:"4px"}}/>
           <CSVLink 

@@ -30,7 +30,7 @@ const UserList = () => {
 
   //문자열 길이 자르기
   function cutString(str, num) {
-    if (str.length > num) {
+    if (str?.length > num) {
       return str.slice(0, num) + "..";
     } else {
       return str;
@@ -120,18 +120,51 @@ const UserList = () => {
   },[])
 
 
+  // const fetchUserList = async() => {
+  //   db.collection("team").doc(teamId).collection("users").get().then((query) => {
+  //     let cityAvatars = []
+  //     const promises = query.docs.map((doc,index) => {
+  //       return db.collection("user").doc(doc.id).get().then((userDoc) => {
+  //         if(userDoc.exists){
+  //           cityAvatars.push(userDoc.data().photoUrl)
+  //           return {...userDoc.data(), id: index}
+  //         }
+  //       });
+  //     }).filter(Boolean);
+  //     Promise.all(promises).then((result) => {
+  //       setListData(result)
+  //       setCardData([
+  //         { totalUsers: cityAvatars.length, title: `${teamId} 사용자 수`, avatars: cityAvatars },
+  //       ])
+  //       setUserList(result)
+  //       setUserListCardData([{ totalUsers: cityAvatars.length, title: `${teamId} 사용자 수`, avatars: cityAvatars }])
+  //       setIsLoading(false)
+  //     });
+  //   });
+  // }
+
   const fetchUserList = async() => {
     db.collection("team").doc(teamId).collection("users").get().then((query) => {
       let cityAvatars = []
       const promises = query.docs.map((doc,index) => {
-        console.log(doc.id)
         return db.collection("user").doc(doc.id).get().then((userDoc) => {
-          cityAvatars.push(userDoc.data().photoUrl)
-          return {...userDoc.data(), id: index}
+          //deleted가 true가 아니고, 존재하는 데이터라면
+          if(userDoc.exists&&userDoc.data().deleted!==true){
+            cityAvatars.push(userDoc.data().photoUrl)
+            return {...userDoc.data(), id: index}
+          } else {
+            // Return a default object if userDoc does not exist, 그리고 삭제된 계정은 리스트에서도 삭제하기
+            db.collection("team").doc(teamId).collection("users").doc(doc.id).delete()
+            if(userDoc.exists&&userDoc.data().deleted===true){
+              db.collection("user").doc(doc.id).delete()
+            }
+            return { id: "deleted" }
+          }
         });
-      });
+      }).filter(Boolean);
       Promise.all(promises).then((result) => {
-        setListData(result)
+        const filteredResult = result.filter((obj) => obj.id !== "deleted");
+        setListData(filteredResult)
         setCardData([
           { totalUsers: cityAvatars.length, title: `${teamId} 사용자 수`, avatars: cityAvatars },
         ])
@@ -141,6 +174,7 @@ const UserList = () => {
       });
     });
   }
+  
 
   if(isLoading) return <LoaderGif mode="background"/>
   

@@ -36,9 +36,9 @@ const Contact = () => {
     const fetchData = async () => {
       let query
       if(userData.roles.includes("super")||userData.roles.includes("high")){
-        query = await db.collection("team_admin").doc("suwon").collection("contact").orderBy("createdAt", 'desc').get()
+        query = await db.collection("team_admin").doc(teamId).collection("contact").orderBy("createdAt", 'desc').get()
       } else {
-        query = await db.collection("team_admin").doc("suwon").collection("contact").where('show', '==', true).orderBy("createdAt", 'desc').get()
+        query = await db.collection("team_admin").doc(teamId).collection("contact").where('show', '==', true).orderBy("createdAt", 'desc').get()
       }
 
       const temp = await Promise.all(query.docs.map(async (doc) => {
@@ -50,11 +50,14 @@ const Contact = () => {
             displayName: userDoc.data().displayName,
             photoUrl: userDoc.data().photoUrl, 
           };
-        }
+        } else 
+          return{id: 'undefined'}
       }).filter(Boolean))
-      
-      setData(temp)
-      setSortedData(temp)
+      console.log(temp)
+      const filteredTemp = temp.filter((obj) => obj.id !== 'undefined' )
+      setData(filteredTemp)
+      console.log(filteredTemp)
+      setSortedData(filteredTemp)
       setIsLoading(false)
     }
 

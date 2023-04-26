@@ -125,6 +125,11 @@ const EditProgram = () => {
   }
 
 
+  useEffect(()=>{
+    const location = sessionStorage.getItem("prevProgramLocId").split("/")
+    console.log(sessionStorage.getItem("prevProgramLocId").split("/"))
+  },[])
+
   const onSubmitClick = async () => {
     console.log(postValues.deadline)
     for(const key in postValues){
@@ -149,9 +154,20 @@ const EditProgram = () => {
     }
 
     
-    const location = sessionStorage.getItem("prevProgramLocId").split("/")
-    console.log(sessionStorage.getItem("prevProgramLocId").split("/"))
-    
+    let location = sessionStorage.getItem("prevProgramLocId").split("/")
+    //현재 위치가 루트폴더가 아니라면 폴더들을 탐색해 현재 위치가 존재하는지 확인해야함
+    if(location.length>1){
+      //해당 프로그램을 저장하려는 location경로가 없는 경로라면(해당 프로그램을 편집할때 다른 유저가 해당 폴더를 삭제한 경우 보완) 루트위치에 저장.
+      const folderLocationDoc = await db.collection("team_admin").doc(team_id).collection("folders").doc(location[location.length-1]).get()
+      if(!folderLocationDoc.exists){
+        location = ["program"]
+        sessionStorage.setItem("prevProgramLoc", "PROGRAM")
+        sessionStorage.setItem("prevProgramLocId", "program")
+        
+        if(!confirm("현재의 폴더 경로가 삭제되었습니다.\n(프로그램 편집중에 다른 유저가 해당 위치의 폴더를 삭제했을 가능성이 높습니다.)\n해당 프로그램을 최상단 경로에 저장하시겠습니까?"))
+          return;
+      }
+    }
     //query를 위해 sections의 id만 따로 빼줌
     const sectionsId = postValues.sections.map((post)=>post.id)
     //첫 프로그램 등록이라면 location정보 작성위함.
@@ -163,6 +179,7 @@ const EditProgram = () => {
         history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
+        location: location[location.length-1]
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })

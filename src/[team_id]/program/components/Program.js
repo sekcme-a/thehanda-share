@@ -372,7 +372,7 @@ const Program = () => {
   */
  //위 코드를 간결하게 바꿈
  const onDeleteClick = async () => {
-  if (!confirm("선택한 항목들을 삭제하시겠습니까?")) return;
+  if (!confirm("선택한 항목들을 삭제하시겠습니까?\n삭제한 폴더 안의 모든 하위 프로그램들은 모두 홈으로 이동됩니다.")) return;
   setIsContentLoading(true);
 
   const foldersChecked = folders.filter(f => f.checked).map(f => f.id);
@@ -412,7 +412,9 @@ const Program = () => {
                 .doc(teamId)
                 .collection("programs")
                 .doc(doc.id)
-                .update("program")
+                .update({
+                  location: "program"
+                })
             );
           });
           return Promise.all(updatePromises);
@@ -420,16 +422,7 @@ const Program = () => {
     );
   });
 
-  // filesChecked.forEach(async (fileId) => {
-  //   const doc = await db.collection("team").doc(teamId).collection("programs").doc(fileId).get();
-  //   if (doc.exists) {
-  //     if (doc.data().team.includes(user.uid) || userData.roles[1] === "super") {
-  //       await db.collection("team").doc(teamId).collection("programs").doc(fileId).delete();
-  //     } else {
-  //       alert("선택된 파일 중 삭제 권한이 없는 파일은 삭제되지 않습니다.");
-  //     }
-  //   }
-  // });
+
   let noAuthority = false
   await Promise.all(filesChecked.map(async (fileId) => {
     const doc = await db.collection("team").doc(teamId).collection("programs").doc(fileId).get();
@@ -547,7 +540,7 @@ const Program = () => {
                 <div className={styles.item_img_container} onClick={()=>onFileClick(item.id)}>
                   <img src={item.data.thumbnailBg==="/custom" ? item.data.customBgURL : item.data.thumbnailBg} alt={item.data.title}/>
                 </div>
-                <p>{item.data.title}</p>
+                <p>{item.data.title.length>26 ? `${item.data.title.substr(0,26)}...`: item.data.title}</p>
               </div>
             )
           })}

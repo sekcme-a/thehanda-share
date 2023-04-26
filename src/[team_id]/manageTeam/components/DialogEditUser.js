@@ -106,7 +106,7 @@ const DialogEditUser = (props) => {
                   {helperValues.isShow && helperValues.text}
                 </FormHelperText>
               </FormControl>
-              <Button variant="text" sx={{ ml: 1, mt: -3 }} onClick={onButtonClick}>{props.mode === "add" ? "추가" : "삭제"}</Button>
+              <Button variant="text" sx={{ ml: 1, mt: -3 }} onClick={onButtonClick}>{props.mode === "delete" ? "삭제" : "추가"}</Button>
             </div>
             {(props.mode==="add" || props.mode==="delete") &&<Typography variant='body2'>코드를 통해 구성원을 {props.mode === "add" ? "추가" : "삭제"}하세요.</Typography>}
             <Typography variant='body2'>

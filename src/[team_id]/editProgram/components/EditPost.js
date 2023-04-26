@@ -300,7 +300,7 @@ const EditPost = ({values, setValues, sections, fileId,type}) => {
                 <TextField value={item.title} onChange={(e)=>onInfoChange(index, "title", e.target.value)} sx={{width:160}} size="small" label="제목"></TextField>
                 <div style={{width:"5px"}}/>
                 <TextField value={item.text} onChange={(e)=>onInfoChange(index, "text", e.target.value)} size="small" multiline={item.type==="text"}
-                  label={item.type==="text" ? "내용" : "링크"} placeholder={item.type==="link" && "https://www.naver.com"} sx={{width: 320}} />
+                  label={item.type==="text" ? "내용" : "링크 (http://이나 https://를 포함시켜야합니다.)"} placeholder={item.type==="link" && "https://www.naver.com"} sx={{width: 320}} />
                 <DeleteOutlineRoundedIcon style={{color: "red", paddingLeft:"10px", paddingTop:"5px"}} onClick={()=>onDeleteInfoClick(index)}/>
               </div>
             )

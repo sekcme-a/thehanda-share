@@ -89,6 +89,13 @@ const ChatView = ({uid, teamId, userName}) =>{
     if(isSending)
       return
 
+    //삭제된 사용자라면 alert뜨고 안보내지게
+    const userDoc = await db.collection("user").doc(uid).get()
+    if(!userDoc.exists){
+      alert("삭제되거나 없는 사용자입니다.")
+      setIsSending(false)
+      return
+    }
     
     if(dates[0]===undefined){
       batch.set(db.collection("team").doc(teamId).collection("message").doc(uid).collection("date").doc(YYYYMMDD), {

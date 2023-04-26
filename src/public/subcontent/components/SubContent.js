@@ -6,6 +6,7 @@ import ProgramInfo from "./ProgramInfo"
 import SurveyInfo from "./SurveyInfo"
 import AnouncementInfo from "./AnouncementInfo"
 import ProgramEdit from "./ProgramEdit"
+import SurveyEdit from "./SurveyEdit"
 import AddSchedule from "./AddSchedule"
 const SubContent = () => {
   const {subContent} = useData()
@@ -27,6 +28,9 @@ const SubContent = () => {
       }
       {subContent.type === "programEdit" &&
         <ProgramEdit subContent={subContent} />
+      }
+      {subContent.type === "surveyEdit" &&
+        <SurveyEdit subContent={subContent} />
       }
       {subContent.type === "teamSchedule" &&
         <AddSchedule subContent={subContent} schduleFor="teamSchedule" />

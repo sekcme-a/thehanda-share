@@ -115,7 +115,7 @@ const ProgramCondition = () => {
               <div className={styles.item_img_container} onClick={()=>onFileClick(item.id)}>
                 <img src={item.data.thumbnailBg==="/custom" ? item.data.customBgURL : item.data.thumbnailBg} alt={item.data.title}/>
               </div>
-              <p >{item.data.title}</p>
+              <p >{item.data.title.length>26 ? `${item.data.title.substr(0,26)}...`: item.data.title}</p>
             </div>
           )
         })}
@@ -145,7 +145,7 @@ const ProgramCondition = () => {
               <div className={styles.item_img_container} onClick={()=>onFileClick(item.id)}>
                 <img src={item.data.thumbnailBg==="/custom" ? item.data.customBgURL : item.data.thumbnailBg} alt={item.data.title}/>
               </div>
-              <p >{item.data.title}</p>
+              <p >{item.data.title.length>26 ? `${item.data.title.substr(0,26)}...`: item.data.title}</p>
               <p style={{paddingTop:"3px"}}>{getDeadlineLeft(item.data)}</p>
             </div>
           )
@@ -176,7 +176,7 @@ const ProgramCondition = () => {
               <div className={styles.item_img_container} onClick={()=>onFileClick(item.id)}>
                 <img src={item.data.thumbnailBg==="/custom" ? item.data.customBgURL : item.data.thumbnailBg} alt={item.data.title}/>
               </div>
-              <p >{item.data.title}</p>
+              <p >{item.data.title.length>26 ? `${item.data.title.substr(0,26)}...`: item.data.title}</p>
               <p style={{paddingTop:"3px"}}>{getStartDateLeft(item.data)}</p>
             </div>
           )

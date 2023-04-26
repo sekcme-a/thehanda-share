@@ -6,7 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction'
 import moment from 'moment';
 // import styles from 'src/public/styles/Calendar.module.css';
-import { DockBottom, Tune } from 'mdi-material-ui';
+import { DockBottom, Tournament, Tune } from 'mdi-material-ui';
 import koLocale from '@fullcalendar/core/locales/ko';
 import styles from "../styles/Calendar.module.css"
 import { Button, ButtonBase, Checkbox, TextField, Dialog } from "@mui/material"
@@ -22,26 +22,32 @@ import { FormControlLabel } from "@mui/material"
 import Select from '@mui/material/Select';
 
 import { firestore as db } from 'firebase/firebase';
+import { useRouter } from 'next/router';
 
 const Calendar = ({events, setEvents, editable}) => {
   const [data, setData] = useState()
   const [isLoading, setIsLoading] = useState(true)
   const [isOpenDialog, setIsOpenDialog] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState({})
-
+  const [changedSelectedEvent, setChangedSelectedEvent] = useState({})
+  const [triggerReload, setTriggerReload] = useState(true)
+  const router = useRouter()
   useEffect(()=>{
     console.log(events)
   },[events])
 
   const onValuesChange = (type, value) => {
     if(editable){
-      setSelectedEvent({...selectedEvent, [type]: value})
-      console.log({...selectedEvent, [type]: value})
+      setChangedSelectedEvent({...changedSelectedEvent, [type]: value})
     }
   }
   const onMemoChange = (value) => {
     if(editable)
-      setSelectedEvent({...selectedEvent, extendedProps:{...selectedEvent.extendedProps, memo: value}})
+    setChangedSelectedEvent({...changedSelectedEvent, extendedProps:{...changedSelectedEvent.extendedProps, memo: value}})
+  }
+  const onUrlChange = (value) => {
+    if(editable)
+     setChangedSelectedEvent({...changedSelectedEvent, extendedProps:{...changedSelectedEvent.extendedProps, url: value}})
   }
 
   const calendarRef = useRef(null)
@@ -56,6 +62,7 @@ const Calendar = ({events, setEvents, editable}) => {
 
   useEffect(()=>{
     setIsLoading(true)
+    console.log(events)
     const temp = events?.map((event) => {
       let newEvent = {...event}
       console.log(event)
@@ -79,7 +86,7 @@ const Calendar = ({events, setEvents, editable}) => {
     console.log(temp)
     setData(temp)
     setIsLoading(false)
-  },[events])
+  },[events, triggerReload])
 
 
   // const handleEventClick = ({ event }) => {
@@ -100,7 +107,6 @@ const Calendar = ({events, setEvents, editable}) => {
     const color = getColor(event.backgroundColor)
     setSelectedEvent({
       title: event._def.title,
-      url: event._def.url,
       start: event._instance.range.start,
       end: event._instance.range.end,
       allDay: event._def.allDay,
@@ -109,9 +115,8 @@ const Calendar = ({events, setEvents, editable}) => {
         ...event._def.extendedProps
       }
     })
-    console.log({
+    setChangedSelectedEvent({
       title: event._def.title,
-      url: event._def.url,
       start: event._instance.range.start,
       end: event._instance.range.end,
       allDay: event._def.allDay,
@@ -142,46 +147,45 @@ const Calendar = ({events, setEvents, editable}) => {
       start: changeInfo.event.start,
       end: changeInfo.event.end,
     };
-    console.log(events)
     setEvents((prevData) => {
       let prevEvents = prevData
       const index = prevEvents.data.findIndex((event) => event.extendedProps.id === updatedEvent._def.extendedProps.id && event.title === updatedEvent._def.title)
       prevData.data[index] = {...prevData.data[index], start: updatedEvent.start, end: updatedEvent.end}
       return prevData
     })
-    console.log(events)
   }
 
+  function onSubmitClick(){
+    setEvents((prevData) => {
+      let prevEvents = prevData
+      const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
+      prevData.data[index] = {...prevData.data[index], ...changedSelectedEvent}
+      return prevData
+    })
+    setTriggerReload(!triggerReload)
+  }
 
-  const onSubmitClick =async() => {
-    if(editable){
-      console.log(events)
-      setEvents((prevData) => {
-        let prevEvents = prevData
-        const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
-        console.log(index)
-        prevData.data[index] = {...prevData.data[index], title:"asdf"}
-        return prevData
-      })
-      console.log(events)
-      // setEvents((prevData) => {
-      //   let prevEvents = prevData
-      //   const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
-      //   console.log(index)
-      //   console.log(prevData.data[index])
-      //   prevData = {...prevData, data: {...prevData.data[index], ...selectedEvent }}
-      //   console.log(prevData)
-      //   return prevData 
-      // })
+  // const onSubmitClick =async() => {
+  //   if(editable){
+  //     console.log(events)
+  //     console.log(selectedEvent)
 
-      // setEvents((prevData) => {
-      //   let prevEvents = prevData
-      //   console.log(prevData)
-      //   const index = prevEvents.data.findIndex((event) => event.extendedProps.id === updatedEvent._def.extendedProps.id && event.title === updatedEvent._def.title)
-      //   prevData.data[index] = {...prevData.data[index], start: updatedEvent.start, end: updatedEvent.end}
-      //   return prevData
-      // })
-    }
+
+  //     setEvents((prevData) => {
+  //       let prevEvents = prevData
+  //       console.log(prevData)
+  //       const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
+  //       console.log(index)
+  //       console.log(changedSelectedEvent)
+  //       prevData.data[index] = {...prevData.data[index], data: changedSelectedEvent}
+  //       console.log(prevData)
+  //       return prevData
+  //     })
+  //   }
+  // }
+
+  const onGoToProgramClick = () => {
+    router.push(changedSelectedEvent.extendedProps.url)
   }
 
   if(isLoading)
@@ -228,12 +232,12 @@ const Calendar = ({events, setEvents, editable}) => {
       <Dialog open={isOpenDialog} onClose={()=>setIsOpenDialog(false)}>
         <div className={styles.dialog_container}>
           
-          <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="제목" value={selectedEvent.title} onChange={(e)=>onValuesChange("title", e.target.value)}/>
-          <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="이동할 주소" placeholder="https://dahanda.netlify.app/" value={selectedEvent.url} onChange={(e)=>onValuesChange("url", e.target.value)}/>
+          <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="제목" value={changedSelectedEvent.title} onChange={(e)=>onValuesChange("title", e.target.value)}/>
+          <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="이동할 주소" placeholder="https://dahanda.netlify.app/" value={changedSelectedEvent.extendedProps?.url} onChange={(e)=>onUrlChange(e.target.value)}/>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <MobileDateTimePicker
               label="시작일"
-              value={selectedEvent.start}
+              value={changedSelectedEvent.start}
               onChange={(e)=>onValuesChange("start", e)}
               renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
             />
@@ -241,7 +245,7 @@ const Calendar = ({events, setEvents, editable}) => {
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <MobileDateTimePicker
               label="종료일"
-              value={selectedEvent.end}
+              value={changedSelectedEvent.end}
               onChange={(e)=>onValuesChange("end", e)}
               renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
             />
@@ -249,7 +253,7 @@ const Calendar = ({events, setEvents, editable}) => {
 
           <FormControlLabel
             control={
-              <Checkbox checked={selectedEvent.allDay} onChange={(e)=>onValuesChange("allDay", e.target.checked)}/>
+              <Checkbox checked={changedSelectedEvent.allDay} onChange={(e)=>onValuesChange("allDay", e.target.checked)}/>
             }
             label="종일 일정" sx={{mt:"5px"}}
           />
@@ -259,7 +263,7 @@ const Calendar = ({events, setEvents, editable}) => {
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={selectedEvent.color}
+              value={changedSelectedEvent.color}
               label="색깔"
               onChange={(e)=>onValuesChange("color", e.target.value)}
               size="small"
@@ -274,11 +278,17 @@ const Calendar = ({events, setEvents, editable}) => {
             </Select>
           </FormControl>
 
-          <TextField variant="standard" multiline  sx={{mt:"5px"}} fullWidth size="small" label="추가 메모" value={selectedEvent.extendedProps?.memo} onChange={(e)=>onMemoChange(e.target.value)}/>
+          <TextField variant="standard" multiline  sx={{mt:"5px"}} fullWidth size="small" label="추가 메모" value={changedSelectedEvent.extendedProps?.memo} onChange={(e)=>onMemoChange(e.target.value)}/>
 
+          <div style={{marginTop:"20px"}} />
           {editable && 
             <div className={styles.button_container}>
               <Button onClick={onSubmitClick} variant="contained" size="small" fullWidth>일정 편집</Button>
+            </div>
+          }
+          {changedSelectedEvent?.extendedProps?.url && 
+            <div className={styles.button_container}>
+              <Button onClick={onGoToProgramClick} variant="contained" size="small" fullWidth>프로그램 확인</Button>
             </div>
           }
         </div>

@@ -248,58 +248,136 @@ const Survey = () => {
     setSelectedFolders([])
   }
 
-  const onDeleteClick = async() => {
-    if(!confirm("선택한 항목들을 삭제하시겠습니까?"))
-      return
-    setIsContentLoading(true)
-    let foldersChecked = []
-    for(let i =0 ; i<folders.length; i++){
-      if(folders[i].checked)
-        foldersChecked.push(folders[i].id)
-    }
-    let filesChecked = []
-    for(let i = 0 ; i<files.length; i++){
-      if(files[i].checked)
-        filesChecked.push(files[i].id)
-    }
+  // const onDeleteClick = async() => {
+  //   if(!confirm("선택한 항목들을 삭제하시겠습니까?\n삭제한 폴더 안의 모든 하위 프로그램들은 모두 홈으로 이동됩니다."))
+  //     return
+  //   setIsContentLoading(true)
+  //   let foldersChecked = []
+  //   for(let i =0 ; i<folders.length; i++){
+  //     if(folders[i].checked)
+  //       foldersChecked.push(folders[i].id)
+  //   }
+  //   let filesChecked = []
+  //   for(let i = 0 ; i<files.length; i++){
+  //     if(files[i].checked)
+  //       filesChecked.push(files[i].id)
+  //   }
 
-    //모든 하위 폴더들 탐색
-    let childFolders = [...foldersChecked]
-    // for (let i = 0; i<50; i++){
-    //   let foundChild = false
-      for( let j = 0; j<childFolders.length; j++){
-        const query = await db.collection("team_admin").doc(teamId).collection("folders").where("parent_node","==",childFolders[j]).get()
-        query.docs.forEach((doc)=> {
-          if(!childFolders.includes(doc.id)){
-            childFolders.push(doc.id)
-            // foundChild = true
-            console.log(childFolders)
-          }
-        })
+  //   //모든 하위 폴더들 탐색
+  //   let childFolders = [...foldersChecked]
+  //   // for (let i = 0; i<50; i++){
+  //   //   let foundChild = false
+  //     for( let j = 0; j<childFolders.length; j++){
+  //       const query = await db.collection("team_admin").doc(teamId).collection("folders").where("parent_node","==",childFolders[j]).get()
+  //       query.docs.forEach((doc)=> {
+  //         if(!childFolders.includes(doc.id)){
+  //           childFolders.push(doc.id)
+  //           // foundChild = true
+  //           console.log(childFolders)
+  //         }
+  //       })
+  //     }
+
+  //   console.log(childFolders)
+  //   const batch = db.batch()
+  //   for(let i = 0; i < childFolders.length ; i ++ ){
+  //     batch.delete(db.collection("team_admin").doc(teamId).collection("folders").doc(childFolders[i]))
+  //     const query = await db.collection("team").doc(teamId).collection("surveys").where("location","==",childFolders[i]).get()
+  //     query.docs.forEach((doc) => {
+  //       // filesToDelete.push(doc.id)
+  //       batch.delete(db.collection("team").doc(teamId).collection("surveys").doc(doc.id))
+  //     })
+  //   }
+  //   for(const checkedFile of filesChecked){
+  //     batch.delete(db.collection("team").doc(teamId).collection("surveys").doc(checkedFile))
+  //   }
+  //   try{
+  //     await batch.commit()
+  //     alert("성공적으로 삭제되었습니다.")
+  //     setTriggerReload(!triggerReload)
+  //   } catch(e) {
+  //     console.log(e)
+  //     alert(e.message)
+  //   }
+  // }
+  //위 코드를 간결하게 바꿈
+ const onDeleteClick = async () => {
+  if (!confirm("선택한 항목들을 삭제하시겠습니까?\n삭제한 폴더 안의 모든 하위 설문조사들은 모두 홈으로 이동됩니다.")) return;
+  setIsContentLoading(true);
+
+  const foldersChecked = folders.filter(f => f.checked).map(f => f.id);
+  const filesChecked = files.filter(f => f.checked).map(f => f.id);
+
+  // Find all child folders
+  const childFolders = [...foldersChecked];
+  for (let i = 0; i < childFolders.length; i++) {
+    const query = await db.collection("team_admin").doc(teamId).collection("folders").where("parent_node", "==", childFolders[i]).get();
+    query.docs.forEach((doc) => {
+      if (!childFolders.includes(doc.id)) {
+        childFolders.push(doc.id);
       }
-
-    console.log(childFolders)
-    const batch = db.batch()
-    for(let i = 0; i < childFolders.length ; i ++ ){
-      batch.delete(db.collection("team_admin").doc(teamId).collection("folders").doc(childFolders[i]))
-      const query = await db.collection("team").doc(teamId).collection("surveys").where("location","==",childFolders[i]).get()
-      query.docs.forEach((doc) => {
-        // filesToDelete.push(doc.id)
-        batch.delete(db.collection("team").doc(teamId).collection("surveys").doc(doc.id))
-      })
-    }
-    for(const checkedFile of filesChecked){
-      batch.delete(db.collection("team").doc(teamId).collection("surveys").doc(checkedFile))
-    }
-    try{
-      await batch.commit()
-      alert("성공적으로 삭제되었습니다.")
-      setTriggerReload(!triggerReload)
-    } catch(e) {
-      console.log(e)
-      alert(e.message)
-    }
+    });
   }
+
+  if(childFolders.length!==0)
+    alert("선택된 폴더 안의 설문조사들은 모두 홈으로 이동됩니다.")
+
+  const batch = db.batch();
+  const programsToUpdate = [];
+  childFolders.forEach((folderId) => {
+    batch.delete(db.collection("team_admin").doc(teamId).collection("folders").doc(folderId));
+    programsToUpdate.push(
+      db
+        .collection("team")
+        .doc(teamId)
+        .collection("surveys")
+        .where("location", "==", folderId)
+        .get()
+        .then((querySnapshot) => {
+          const updatePromises = [];
+          querySnapshot.forEach((doc) => {
+            updatePromises.push(
+              db
+                .collection("team")
+                .doc(teamId)
+                .collection("surveys")
+                .doc(doc.id)
+                .update({
+                  location: "survey"
+                })
+            );
+          });
+          return Promise.all(updatePromises);
+        })
+    );
+  });
+
+
+  let noAuthority = false
+  await Promise.all(filesChecked.map(async (fileId) => {
+    const doc = await db.collection("team").doc(teamId).collection("surveys").doc(fileId).get();
+    if (doc.exists) {
+      if (doc.data().team.includes(user.uid) || userData.roles[1] === "super") {
+        await db.collection("team").doc(teamId).collection("surveys").doc(fileId).delete();
+      } else {
+        noAuthority = true
+      }
+    }
+  }));
+  if(noAuthority)
+    alert("선택된 파일 중 삭제 권한이 없는 파일은 삭제되지 않습니다.");
+  
+
+  try {
+    await Promise.all(programsToUpdate);
+    await batch.commit();
+    alert("성공적으로 삭제되었습니다.");
+    setTriggerReload(!triggerReload);
+  } catch (e) {
+    console.log(e);
+    alert(e.message);
+  }
+};
 
   const onFileClick = (id) => {
     // router.push(`/${teamId}/editProgram/${id}`)

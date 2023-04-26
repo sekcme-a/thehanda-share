@@ -15,14 +15,24 @@ import File from "./items/File"
 
 const Form = ({ formDatas, data, handleData, addMargin }) => {
   useEffect(() => {
-    if (data === "") {
-      
-    }
+    console.log(formDatas)
   },[formDatas])
+
+  const createMarkup = (data) => {
+    return {__html: data}
+  }
+
+
   return (
     <div className={styles.form_container}>
       {
         formDatas.map((formData, index) => {
+          if(formData.type==="text_area")
+            return(
+              <>
+                <div dangerouslySetInnerHTML={createMarkup(formData.text)} />
+              </>
+            )
           if (formData.type === "single_checkbox")
             return (
               <>

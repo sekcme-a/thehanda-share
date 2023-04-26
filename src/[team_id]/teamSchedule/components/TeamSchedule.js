@@ -78,30 +78,36 @@ const TeamSchedule = () => {
 
       <ul className={styles.color_container}>
         
-        <li className={styles.item_container}>
-          <div className={`${styles.dot} ${styles.red}`} />
-          <p className={`${styles.color_text} ${styles.red}`} >{calendar.colorValues.red}</p>
-        </li>
-
-        <li className={styles.item_container}>
-          <div className={`${styles.dot} ${styles.yellow}`} />
-          <p className={`${styles.color_text} ${styles.yellow}`} >{calendar.colorValues.yellow}</p>
-        </li>
-
-        <li className={styles.item_container}>
-          <div className={`${styles.dot} ${styles.green}`} />
-          <p className={`${styles.color_text} ${styles.green}`} >{calendar.colorValues.green}</p>
-        </li>
-
-        <li className={styles.item_container}>
-          <div className={`${styles.dot} ${styles.blue}`} />
-          <p className={`${styles.color_text} ${styles.blue}`} >{calendar.colorValues.blue}</p>
-        </li>
-
-        <li className={styles.item_container}>
-          <div className={`${styles.dot} ${styles.purple}`} />
-          <p className={`${styles.color_text} ${styles.purple}`} >{calendar.colorValues.purple}</p>
-        </li>
+        {calendar?.colorValues?.red &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.red}`} />
+            <p className={`${styles.color_text} ${styles.red}`} >{calendar.colorValues.red}</p>
+          </li>
+        }
+        {calendar?.colorValues?.yellow &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.yellow}`} />
+            <p className={`${styles.color_text} ${styles.yellow}`} >{calendar.colorValues.yellow}</p>
+          </li>
+        }
+        {calendar?.colorValues?.green &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.green}`} />
+            <p className={`${styles.color_text} ${styles.green}`} >{calendar.colorValues.green}</p>
+          </li>
+        }
+        {calendar?.colorValues?.blue &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.blue}`} />
+            <p className={`${styles.color_text} ${styles.blue}`} >{calendar.colorValues.blue}</p>
+          </li>
+        }
+        {calendar?.colorValues?.purple &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.purple}`} />
+            <p className={`${styles.color_text} ${styles.purple}`} >{calendar.colorValues.purple}</p>
+          </li>
+        }
 
 
       </ul>

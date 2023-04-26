@@ -13,7 +13,7 @@ const Chat = () => {
   const [selectedTitle, setSelectedTitle] = useState("")
 
   useEffect(()=>{
-    const dbRef = db.collection("team").doc(teamId).collection("message").orderBy("repliedAt", "desc").limit(150)
+    const dbRef = db.collection("team").doc(teamId).collection("message").orderBy("repliedAt", "desc")
     const unsubscribe = dbRef.onSnapshot((query)=>{
       const temp = query.docs.map((doc)=>{
         return {...doc.data(), id:doc.id}

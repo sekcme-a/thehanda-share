@@ -18,6 +18,11 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { TextField } from "@mui/material"
 import { CellphoneMessageOff } from "mdi-material-ui"
 import { Switch } from "@mui/material"
+
+import { Backdrop } from "@mui/material"
+import Form from "src/form/Form"
+import Article from "src/article/components/Article"
+import SubContent from "src/public/subcontent/components/SubContent"
 //stepper
 const data = [
   "게시물 작성",
@@ -28,7 +33,7 @@ const data = [
 const EditProgram = () => {
   const router = useRouter()
   const {team_id, file_id} = router.query
-  const {userData, setTeamId, teamId} = useData()
+  const {userData, setTeamId, teamId,setSubContent} = useData()
 
   const [step, setStep] = useState(0)
 
@@ -56,12 +61,17 @@ const EditProgram = () => {
 
   const [isLoading, setIsLoading] = useState(true)
 
+  const [openBackdrop, setOpenBackdrop] = useState(false)
+
   // const onValuesChangeWithEvent = (event, type) => {
   //   setPostValues({...postValues, ["type"]: event.target.value})
   // }
 
   useEffect(()=>{
-    console.log(postValues)
+    setSubContent({
+      id: file_id,
+      type: "surveyEdit"
+    })
   },[postValues])
 
 
@@ -92,7 +102,7 @@ const EditProgram = () => {
   },[])
 
   const onPreviewClick = () => {
-
+    setOpenBackdrop(true)
   }
   const onPreviousClick = () => {setStep(step-1)}
   const onNextClick = () => {setStep(step+1)}
@@ -126,8 +136,19 @@ const EditProgram = () => {
     }
 
     
-    const location = sessionStorage.getItem("prevSurveyLocId").split("/")
-    
+    let location = sessionStorage.getItem("prevSurveyLocId").split("/")
+    //현재 위치가 루트폴더가 아니라면 폴더들을 탐색해 현재 위치가 존재하는지 확인해야함
+    if(location.length>1){
+      const folderLocationDoc = await db.collection("team_admin").doc(team_id).collection("folders").doc(location[location.length-1]).get()
+      if(!folderLocationDoc.exists){
+        location = ["survey"]
+        sessionStorage.setItem("prevSurveyLoc", "SURVEY")
+        sessionStorage.setItem("prevSurveyLocId", "survey")
+        
+        if(!confirm("현재의 폴더 경로가 삭제되었습니다.\n(설문조사 편집중에 다른 유저가 해당 위치의 폴더를 삭제했을 가능성이 높습니다.)\n해당 설문조사를 최상단 경로에 저장하시겠습니까?"))
+          return;
+      }
+    }
     //query를 위해 sections의 id만 따로 빼줌
     const sectionsId = postValues.sections.map((post)=>post.id)
     //첫 프로그램 등록이라면 location정보 작성위함.
@@ -139,6 +160,7 @@ const EditProgram = () => {
         history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
+        location: location[location.length-1]
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })
@@ -289,10 +311,26 @@ const EditProgram = () => {
 
 
           <div className={styles.sub_content_container}>
-  
+            <SubContent />
           </div>
         </div>
       </div>
+      <Backdrop
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openBackdrop}
+        onClick={()=>setOpenBackdrop(false)}
+      >
+         {step === 0  && 
+          <div onClick={() => {setTimeout(()=>{setOpenBackdrop(true)},10) }} style={{width:"400px", height:"700px", position:"absolute", backgroundColor:"white", overflow:"scroll", padding: "10px"}}>
+            <Article data={postValues} teamName={team_id} id={file_id} type="surveys" mode="preview" />
+          </div>
+        }
+        {step === 1 && 
+          <div style={{width:"400px", height:"700px", backgroundColor:"white", overflow:"scroll", padding: "10px"}}>
+            <Form formDatas={postValues.formData} data={[]} handleData={()=>{}} addMargin={true} />
+          </div>
+        }
+      </Backdrop>
     </>
   )
 }

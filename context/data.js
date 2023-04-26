@@ -30,6 +30,19 @@ export function DataProvider(props){
     useEffect(()=>{
         const fetchData = async() => {
             if(teamId!==""){
+                //user중 deleted로 표시되있는 유저 삭제 및 해당 유저에 대한 내용 삭제
+                // db.collection("team").doc(teamId).collection("users").get().then(async(query) => {
+                //     query.docs.map(async(doc) => {
+                //         const userDoc = await db.collection("user").doc(doc.id).
+                //     })
+                // })
+                db.collection("user").where("deleted","==",true).get().then((querySnapshot) => {
+                    querySnapshot.docs.map((doc) => {
+                      db.collection("user").doc(doc.id).delete()
+                    })
+                  })
+
+
                 db.collection("team").doc(teamId).get().then((doc) => {
                     if(doc.exists){
                         setTeamProfile(doc.data().profile)
@@ -40,9 +53,10 @@ export function DataProvider(props){
 
                 //fetching calendar
                 db.collection("team_admin").doc(teamId).get().then((doc) => {
-                    if(doc.exists){
+                    if(doc.exists && doc.data().calendar)
                         setCalendar(doc.data().calendar)
-                    }
+                    else
+                        setCalendar({colorValues: {red:"",yellow:"",green:"",blue:"",purple:""}, data:[]})
                 })
             }
         }

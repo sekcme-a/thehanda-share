@@ -27,8 +27,8 @@ const TeamProfile = () => {
   }
 
   const onSubmitClick = () => {
-    if(name.length>10){
-      alert("팀명은 10글자 이내여야 합니다.")
+    if(name.length>12){
+      alert("팀명은 12글자 이내여야 합니다.")
       return;
     }
     setIsSubmitting(true)
@@ -64,7 +64,7 @@ const TeamProfile = () => {
           </DropperImage>
 
           <h1>팀명 변경</h1>
-          <p style={{marginBottom:"10px"}}>*팀명은 10글자 이하여야 합니다.</p>
+          <p style={{marginBottom:"10px"}}>*팀명은 12글자 이내여야 합니다.</p>
           <TextField value={name} onChange={e=>setName(e.target.value)} size="small"/>
         </div>
         <div className={styles.button_container}>
