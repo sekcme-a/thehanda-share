@@ -1,5 +1,6 @@
 import "src/public/styles/reset.css"
 import "src/public/styles/quill.css"
+import "src/public/styles/calendar.css"
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { DataProvider } from "context/data";
 import { useEffect } from "react";

@@ -129,11 +129,11 @@ const AddDialog = ({addFormData, handleCloseDialog, formData, teamName, contentM
     }
   }
 
-  const handleOnKeyPress = (e) => {
-    if (e.key === "Enter") {
-      onAddClick()
-    }
-  }
+  // const handleOnKeyPress = (e) => {
+  //   if (e.key === "Enter") {
+  //     onAddClick()
+  //   }
+  // }
 
   const onItemChange = (e)=>{setItems(e.target.value)}
 

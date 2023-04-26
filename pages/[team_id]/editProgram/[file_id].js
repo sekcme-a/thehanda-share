@@ -234,11 +234,11 @@ const EditProgram = () => {
             
             //중복된 토큰 삭제
             const uniqueTokenList = [...new Set(tokenList)];
-            
+            console.log(uniqueTokenList)
             Promise.all(
               uniqueTokenList.map(async (token) => {
                 try {
-                  const result = await sendNotification(token, alarmText);
+                  const result = await sendNotification(token,"예정 프로그램", alarmText);
                 } catch (e) {
                   console.log(e);
                 }
@@ -275,15 +275,15 @@ const EditProgram = () => {
                 //알람세팅이 되지 않은 초기상태라면 메세지 보내기
                 return doc.data().pushToken
               }
-            })
+            }).filter(Boolean)
             
             //중복된 토큰 삭제
             const uniqueTokenList = [...new Set(tokenList)];
-            
+            console.log(uniqueTokenList)
             Promise.all(
               uniqueTokenList.map(async (token) => {
                 try {
-                  const result = await sendNotification(token, alarmText);
+                  const result = await sendNotification(token,"신규 프로그램", alarmText);
                 } catch (e) {
                   console.log(e);
                 }

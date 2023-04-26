@@ -129,11 +129,11 @@ const AddDialog = ({addFormData, handleCloseDialog, formData, teamName, contentM
     }
   }
 
-  const handleOnKeyPress = (e) => {
-    if (e.key === "Enter") {
-      onAddClick()
-    }
-  }
+  // const handleOnKeyPress = (e) => {
+  //   if (e.key === "Enter") {
+  //     onAddClick()
+  //   }
+  // }
 
   const onItemChange = (e)=>{setItems(e.target.value)}
 
@@ -220,7 +220,7 @@ const AddDialog = ({addFormData, handleCloseDialog, formData, teamName, contentM
           <>
             <div className={styles.input_container}>
             <TextField id='standard-basic' label='옵션 추가'
-              onKeyDown={handleOnKeyPress} variant='standard'
+              variant='standard'
               value={textInput} onChange={onTextInputChange}
               helperText={textFieldHelperText}
               error={isTextFieldHelperTextError}

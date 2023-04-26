@@ -1,0 +1,10 @@
+.dialog_container{
+  padding: 10px 20px;
+}
+
+.button_container{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}

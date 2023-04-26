@@ -49,34 +49,35 @@ const Result = () => {
     const fetchData = async() => {
       await db.collection("contents").doc(teamName).collection(type).doc(slug).collection("result").orderBy("createdAt", "desc").get().then((query)=>{
         let rowsList = []
-        query.docs.map(async(doc, index)=>{
-          const userDoc = await db.collection("users").doc(doc.id).get()
-          let tempDataList = {uid: doc.id, name: userDoc.data().realName, phone: userDoc.data().phoneNumber}
-          
-          doc.data().data.map((item, index)=>{
-            if (typeof (item.value) === "object") {
-              if (item.value.length !== undefined) {
-                let tempString = ""
-                item.value.map((asdf, index) => {
-                  if (index === 0)
-                    tempString = asdf
-                  else
-                    tempString = `${tempString},${asdf}`
-                })
-                console.log(tempString)
-                tempDataList = { ...tempDataList, [item.id]: item.value }
-              }
-              else
-              tempDataList = { ...tempDataList, [item.id]: item.value.toDate().toLocaleString('ko-KR').replace(/\s/g, '') }
-            } else
-              tempDataList = { ...tempDataList, [item.id]: item.value }
-
-            
-            
-          })
-          rowsList = [...rowsList, tempDataList]
-          setData(rowsList)
-        })
+        Promise.all(query.docs.map((doc, index) => {
+          return db.collection("users").doc(doc.id).get().then(userDoc => {
+            let tempDataList = {uid: doc.id, name: userDoc.data().realName, phone: userDoc.data().phoneNumber};
+            doc.data().data.map((item, index) => {
+              if (typeof(item.value) === "object") {
+                if (item.value.length !== undefined) {
+                  let tempString = "";
+                  item.value.map((asdf, index) => {
+                    if (index === 0)
+                      tempString = asdf
+                    else
+                      tempString = `${tempString},${asdf}`
+                  })
+                  console.log(tempString);
+                  tempDataList = {...tempDataList, [item.id]: item.value}
+                }
+                else
+                  tempDataList = {...tempDataList, [item.id]: item.value.toDate().toLocaleString('ko-KR').replace(/\s/g, '')}
+              } else
+                tempDataList = {...tempDataList, [item.id]: item.value}
+            })
+            return tempDataList;
+          });
+        })).then(rowsList => {
+          setData(rowsList);
+        }).catch(error => {
+          console.log(error);
+        });
+        
       })
 
       await db.collection("contents").doc(teamName).collection(type).doc(slug).get().then((doc) => {
@@ -164,7 +165,7 @@ const Result = () => {
             filename={`${title}.csv`}
             target="_blank"
           >
-            엑셀로 추출
+            엑셀로 추출 
           </CSVLink>
         </Button> 
         <div style={{marginTop:"15px"}}/>

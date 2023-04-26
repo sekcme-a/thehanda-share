@@ -55,6 +55,10 @@ const Header = (props) => {
       setTitle("센터문의 관리")
     else if (props.location==="teamProfile")
       setTitle("팀 프로필")
+    else if (props.location==="chat")
+      setTitle("메세지 채팅")
+    else if (props.location==="teamSchedule")
+      setTitle("팀 스케줄")
     db.collection("user").doc(userData.uid).get().then((doc) => {
       setPhoto(doc.data().photoUrl)
     })

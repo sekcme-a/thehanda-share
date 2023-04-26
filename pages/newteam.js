@@ -20,7 +20,7 @@ const Newteam = () => {
                 } else{
                     await db.collection("team").doc(values.id).set({
                         id: values.id,
-                        teamName: values.teamName,
+                        teamName: values.name,
                         profile: "/logo_purple_bg.png"
                     })
                     db.collection("team_admin").doc(values.id).set({

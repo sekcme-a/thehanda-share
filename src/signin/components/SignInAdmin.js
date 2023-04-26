@@ -176,8 +176,8 @@ const SignIn = () => {
         <div className={styles.title_container}>
           <h1>Adventure Starts Here</h1>
           <p>Make your app management easy and fun!</p>
-          <h3 className={styles.warning}>{`!소셜로그인을 사용하는 것을 추천합니다.(구글, 애플 등)`}</h3>
-          <h3 className={styles.warning}>{`!Highly recommend using social login`}</h3>
+          {/* <h3 className={styles.warning}>{`!소셜로그인을 사용하는 것을 추천합니다.(구글, 애플 등)`}</h3>
+          <h3 className={styles.warning}>{`!Highly recommend using social login`}</h3> */}
           <h3 className={styles.warning}>{`!실제 사용하고 있는 이메일을 입력해주세요.`}</h3>
           <h3 className={styles.warning}>{`(비밀번호 찾기 시 메일 발송)`}</h3>
         </div>

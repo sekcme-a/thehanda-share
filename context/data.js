@@ -24,6 +24,9 @@ export function DataProvider(props){
     //team profile
     const [teamProfile, setTeamProfile] = useState("")
 
+    //calendar [{colorValues:{red:"asdf", blue:"asdf"}, data: [{}] }]
+    const [calendar, setCalendar] = useState()
+
     useEffect(()=>{
         const fetchData = async() => {
             if(teamId!==""){
@@ -33,6 +36,13 @@ export function DataProvider(props){
                         setTeamName(doc.data().teamName)
                     }
 
+                })
+
+                //fetching calendar
+                db.collection("team_admin").doc(teamId).get().then((doc) => {
+                    if(doc.exists){
+                        setCalendar(doc.data().calendar)
+                    }
                 })
             }
         }
@@ -57,7 +67,9 @@ export function DataProvider(props){
         userListCardData,
         setUserListCardData,
         teamProfile,
-        setTeamProfile
+        setTeamProfile,
+        calendar,
+        setCalendar
     }
 
     return <dataContext.Provider value={value} {...props} />

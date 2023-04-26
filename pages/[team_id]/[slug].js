@@ -26,6 +26,8 @@ import Contact from "src/[team_id]/contact/components/Contact"
 
 import SubContent from "src/public/subcontent/components/SubContent"
 import TeamProfile from "src/[team_id]/teamProfile/TeamProfile"
+import Chat from "src/[team_id]/chat/components/Chat"
+import TeamSchedule from "src/[team_id]/teamSchedule/components/TeamSchedule"
 
 const Index = () => {
     const router = useRouter()
@@ -52,6 +54,12 @@ const Index = () => {
 
     useEffect(()=>{
         setSubContent("index")
+        if(slug==="teamSchedule"){
+            setSubContent({
+                type: slug,
+                teamId: team_id,
+            })
+        }
     },[slug])
 
     if(isLoading)
@@ -83,6 +91,8 @@ const Index = () => {
                 slug==="programCondition" ? <ProgramCondition /> :
                 slug==="contact" ? <Contact /> :
                 slug==="teamProfile" ? <TeamProfile /> :
+                slug==="chat" ? <Chat /> :
+                slug==="teamSchedule" ? <TeamSchedule /> :
                 <></>
             }
           </div>

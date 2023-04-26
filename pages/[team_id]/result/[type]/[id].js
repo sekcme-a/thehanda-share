@@ -73,10 +73,11 @@ const Result = () => {
       .orderBy("createdAt", "desc")
       .get()
       .then(async (query) => {
-        const rowsList = [];
+        let rowsList = [];
     
         await Promise.all(
           query.docs.map(async (doc) => {
+            let tempArray = []
             const userDoc = await db.collection("user").doc(doc.id).get();
             const tempDataList = {
               relation: "신청자",
@@ -103,45 +104,44 @@ const Result = () => {
               }
             });
     
-            rowsList.push(tempDataList);
+            tempArray.push(tempDataList);
     
             // 자녀프로그램일시, 자녀들의 데이터도 받아옴
             if (doc.data().selectedMembers) {
-              setIsChildrenMode(true)
-              await Promise.all(
-                doc.data().selectedMembers.map(async (member) => {
-                  const memberDoc = await db.collection("user").doc(member).get();
-                  const filtered = userDoc.data().family.filter(item=>item.uid === member)
-                  let relation = ""
-                  switch(filtered[0].relation){
-                    case "me":
-                      relation = "본인"
-                      break;
-                    case "children":
-                      relation="자녀"
-                      break;
-                    case "spouse":
-                      relation="배우자"
-                      break;
-                    case "parents":
-                      relation="부모"
-                      break;
-                  }
-                  console.log(relation)
-                  if (memberDoc.exists) {
-                    rowsList.push({
-                      relation: relation,
-                      uid: memberDoc.id,
-                      name: memberDoc.data().realName,
-                      phone: memberDoc.data().phoneNumber,
-                      token: memberDoc.data().pushToken,
-                      isAlarmOn: memberDoc.data().isAlarmOn,
-                      alarmSetting: memberDoc.data().alarmSetting,
-                    });
-                  }
-                })
-              );
+              setIsChildrenMode(true);
+    
+              for (const member of doc.data().selectedMembers) {
+                const memberDoc = await db.collection("user").doc(member).get();
+                const filtered = userDoc.data().family.filter(item=>item.uid === member)
+                let relation = ""
+                switch(filtered[0].relation){
+                  case "me":
+                    relation = "본인"
+                    break;
+                  case "children":
+                    relation="자녀"
+                    break;
+                  case "spouse":
+                    relation="배우자"
+                    break;
+                  case "parents":
+                    relation="부모"
+                    break;
+                }
+                if (memberDoc.exists) {
+                  tempArray.push({
+                    relation: relation,
+                    uid: memberDoc.id,
+                    name: memberDoc.data().realName,
+                    phone: memberDoc.data().phoneNumber,
+                    token: memberDoc.data().pushToken,
+                    isAlarmOn: memberDoc.data().isAlarmOn,
+                    alarmSetting: memberDoc.data().alarmSetting,
+                  });
+                }
+              }
             }
+            rowsList = [...rowsList, ...tempArray]
           })
         );
         console.log(rowsList)
@@ -233,7 +233,7 @@ const Result = () => {
     Promise.all(
       uniqueTokenList.map(async (token) => {
         try {
-          const result = await sendNotification(token, alarmText);
+          const result = await sendNotification(token,'프로그램 알림', alarmText);
         } catch (e) {
           console.log(e);
         }

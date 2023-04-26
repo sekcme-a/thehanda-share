@@ -34,6 +34,8 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 
 const Navbar = () => {
   const router = useRouter()
@@ -109,31 +111,7 @@ const Navbar = () => {
         </List> */}
       </Collapse>
         
-      <ListItemButton onClick={handleClick}>
-        <ListItemIcon>
-          <GroupIcon />
-        </ListItemIcon>
-        <ListItemText primary="팀 관리" />
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("manageTeam")}>
-            <ListItemIcon>
-              <Diversity3Icon />
-            </ListItemIcon>
-            <ListItemText primary="구성원 관리" />
-          </ListItemButton>
-        </List>
-        <List component="div" disablePadding>
-          <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("teamProfile")}>
-            <ListItemIcon>
-              <AccountBoxOutlinedIcon />
-            </ListItemIcon>
-            <ListItemText primary="팀 프로필" />
-          </ListItemButton>
-        </List>
-        </Collapse>
+    
 
 
       <ListItemButton onClick={handleClick3}>
@@ -207,6 +185,50 @@ const Navbar = () => {
           </List>
         }
       </Collapse>
+
+      <ListItemButton onClick={handleClick}>
+        <ListItemIcon>
+          <GroupIcon />
+        </ListItemIcon>
+        <ListItemText primary="팀 관리" />
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+            <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("teamProfile")}>
+              <ListItemIcon>
+                <AccountBoxOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText primary="팀 프로필" />
+            </ListItemButton>
+          </List>
+
+
+          <List component="div" disablePadding>
+            <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("manageTeam")}>
+              <ListItemIcon>
+                <Diversity3Icon />
+              </ListItemIcon>
+              <ListItemText primary="구성원 관리" />
+            </ListItemButton>
+          </List>
+
+          <List component="div" disablePadding>
+            <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("teamSchedule")}>
+              <ListItemIcon>
+                <CalendarMonthOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText primary="팀 스케줄" />
+            </ListItemButton>
+          </List>
+        </Collapse>
+
+        <ListItemButton onClick={()=>onClick("chat")}>
+            <ListItemIcon>
+              <ChatOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="메세지 채팅" />
+          </ListItemButton>
 
 
 

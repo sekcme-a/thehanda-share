@@ -9,7 +9,7 @@ import Image from "next/image";
 import { sendNotification } from "src/public/hooks/notification";
 import { CircularProgress } from "@mui/material";
 
-const ChatView = ({uid, teamId}) =>{
+const ChatView = ({uid, teamId, userName}) =>{
   const [dates, setDates] = useState([])
   const [input, setInput] = useState("")
   const {teamProfile, teamName} = useData()
@@ -27,7 +27,7 @@ const ChatView = ({uid, teamId}) =>{
     //     timeline: "2023.04.04"
     //   },
     // ])
-    const dbRef = db.collection("team").doc(teamId).collection("message").doc(uid).collection("date").orderBy("date", "desc").limit(3)
+    const dbRef = db.collection("team").doc(teamId).collection("message").doc(uid).collection("date").orderBy("date", "desc").limit(30)
     const unsubscribe = dbRef.onSnapshot((querySnapshot) => {
       if(!querySnapshot.empty){
         const data = querySnapshot.docs.map((doc)=>{
@@ -37,6 +37,10 @@ const ChatView = ({uid, teamId}) =>{
           })
         })
         setDates([...data.reverse(),])
+
+        db.collection("team").doc(teamId).collection("message").doc(uid).update({
+          unread: 0
+        })
 
         setTimeout(()=>{
           const element = messagesRef.current;
@@ -50,7 +54,7 @@ const ChatView = ({uid, teamId}) =>{
     return () => {
       unsubscribe()
     }
-  },[])
+  },[uid])
 
   const getYYYYMMDD = () => {
     const today = new Date();
@@ -141,6 +145,15 @@ const ChatView = ({uid, teamId}) =>{
       })
     }
 
+    //admin쪽 messagelist변경위해
+    batch.set(db.collection("team").doc(teamId).collection("message").doc(uid), {
+      repliedAt: new Date(),
+      mode: "talk",
+      title: userName,
+      content: input,
+      unread: 0,
+    })
+
     batch.commit().then( async()=>{
       //push notification
       try{
@@ -177,7 +190,7 @@ const ChatView = ({uid, teamId}) =>{
 
 
   return(
-    <div>
+    <div className={styles.main_container}>
       <div className={styles.chat_container} ref={messagesRef}>
         {dates.length===0 && <p className={styles.no_chat}>아직 채팅 내역이 없습니다.</p>}
         {dates.map((date)=>{

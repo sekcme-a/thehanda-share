@@ -1,0 +1,118 @@
+.TeamSchedule_main_container__pNkRh{
+  background-color: white;
+}
+
+.fc-view-harness.fc-view-harness-active{
+  border: 1px solid #999 !important;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.fc-toolbar-chunk{
+  display: flex;
+  flex-wrap: wrap;
+  /* width:300px; */
+  align-items: center;
+}
+.fc-toolbar-title{
+  font-size:18px !important;
+}
+.fc-toolbar-chunk div:nth-child(2n){
+  margin-left: 0px !important;
+}
+.fc-button-group{
+  /* border-radius: 7px !important;
+  overflow: hidden; */
+  /* justify-content: center !important;
+  align-items: center !important; */
+}
+.fc-button{
+  padding: 0 5px !important;
+  /* background-color: rgb(138, 43, 226); */
+  background-color: white !important;
+  border: none !important;
+  color: black !important;
+}
+.fc--button.fc-button.fc-button-primary{
+  display: none ;
+}
+.fc-button-group{
+  background-color: none !important;
+}
+.fc-prev-button.fc-button.fc-button-primary{
+
+}
+.fc-next-button.fc-button.fc-button-primary{
+  margin-left: 0px !important;
+}
+
+
+.fc-dayGridMonth-button{
+  padding: 0 14px!important;
+  border: 1px solid rgba(58, 53, 65, 0.12) !important;
+}
+.fc-timeGridWeek-button{
+  padding: 0 14px!important;
+  border: 1px solid rgba(58, 53, 65, 0.12) !important;
+}
+.fc-timeGridDay-button{
+  padding: 0 14px!important;
+  border: 1px solid rgba(58, 53, 65, 0.12) !important;
+}
+.fc-listMonth-button{
+  padding: 0 14px!important;
+  border: 1px solid rgba(58, 53, 65, 0.12) !important;
+}
+.fc-button-active{
+  box-shadow: none !important;
+  background-color: rgb(147, 112, 219) !important;
+  color: white !important;
+}
+
+.fc-col-header{
+  background-color: rgb(147, 112, 219);
+  color: white !important;
+}
+.fc-col-header-cell-cushion{
+  color: white !important;
+}
+
+.fc-daygrid-day-number{
+  font-size: 14px;
+}
+
+/* 일요일 날짜 빨간색 */
+.fc-day-sun a {
+  color: rgb(255, 99, 71);
+  text-decoration: none;
+}
+
+/* 토요일 날짜 파란색 */
+.fc-day-sat a {
+  color: rgb(0, 0, 139) ;
+  text-decoration: none;
+}
+
+
+.fc-event{
+  /* background-color: rgb(154, 111, 195) !important; */
+  border: none;
+}
+
+.fc-list-event{
+  /* background-color: rgb(255, 255, 255) !important; */
+  cursor: pointer;
+}
+.fc-daygrid-event{
+  /* color: white !important */
+}
+.fc-daygrid-event-dot{
+  border: calc(var(--fc-daygrid-event-dot-width)/3) solid black;
+}
+/* fc-day fc-day-tue fc-day-today fc-daygrid-day */
+.fc-daygrid-day.fc-day-today  {
+  background-color:  rgba(58, 53, 65, 0.07)  !important;
+}
+.fc .fc-day-today:not(.fc-popover) {
+  background-color: rgba(58, 53, 65, 0.04) !important;
+}
