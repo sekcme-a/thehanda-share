@@ -43,6 +43,7 @@ const User = () => {
       const profile_settings = await firebaseHooks.fetch_profile_settings_object(localStorage.getItem("teamId"))
       setDatas({ ...datas, user_data: user_data, user_additional_data: user_additional_data, profile_settings: profile_settings})
       setIsLoading(false)
+      console.log(user_data)
     }
 
     if(user && slug)
@@ -73,7 +74,7 @@ const User = () => {
               <UserViewLeft data={datas.user_data} />
             </Grid>
             <Grid item xs={12} md={7} lg={8}>
-              <UserViewRight profile_settings={datas.profile_settings} additional_data={datas.user_additional_data} uid={slug} />
+              <UserViewRight profile_settings={datas.profile_settings} additional_data={datas.user_additional_data} uid={slug} userData={datas.user_data} />
             </Grid>
           </Grid>
         </div>

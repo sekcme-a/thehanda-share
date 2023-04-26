@@ -49,7 +49,7 @@ const Address = ({ title, items, index, id, data, handleData,text,isRequired }  
   }
 
   const valueIndex = () => {
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data?.length; i++) {
       if (data[i].id === id) {
         return i
       }

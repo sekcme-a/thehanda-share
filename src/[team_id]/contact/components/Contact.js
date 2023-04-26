@@ -154,6 +154,7 @@ const Contact = () => {
           console.log(doc.data())
           try {
             const result = await sendNotification(doc.data().pushToken,"문의답장 알림","문의하신 내용에 답장이 도착했습니다.");
+            setRepliedText("")
             alert("성공적으로 보냈습니다.")
           } catch (e) {
             console.log(e);
@@ -199,7 +200,7 @@ const Contact = () => {
             })
           }
             <div className={openContent ? `${styles.content_container} ${styles.show}` : styles.content_container}>
-              <div className={styles.content_header} onClick={() => setOpenContent(false)}>
+              <div className={styles.content_header} onClick={() => {setOpenContent(false);setRepliedText("");}}>
                 <ArrowBackIosNewRoundedIcon style={{fontSize:"20px"}}/>
                 <p>{sortedData[selectedIndex]?.mode==="program" && "[프로그램 문의]"}{sortedData[selectedIndex]?.title}</p>
               </div>

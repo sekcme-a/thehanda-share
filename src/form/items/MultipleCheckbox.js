@@ -46,7 +46,7 @@ const MultipleCheckbox = ({ title, items, index, id, data, handleData,text,isReq
     let prevData = data
 
     if (value === "") {
-      prevData.push({id: id, value: selectedList})
+      prevData?.push({id: id, value: selectedList})
     } else {
       for (let i = 0; i < data.length; i++) {
         if (data[i].id === id) {

@@ -130,7 +130,7 @@ const UserViewRight = (props) => {
 
         <TabPanel sx={{ p: 0 }} value='chat'>
           <Card sx={{padding: "10px 20px"}}>
-            <ChatView uid={props.uid} teamId={teamId} />
+            <ChatView uid={props.uid} teamId={teamId} userName={props.userData.realName} />
           </Card>
         </TabPanel>
 

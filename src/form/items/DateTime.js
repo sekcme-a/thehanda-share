@@ -14,7 +14,7 @@ const DateTime = ({ title, items, index, id, data, handleData,text,isRequired  }
   const [value, setValue] = useState(new Date())
   useEffect(() => {
     console.log(items)
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data?.length; i++) {
       if (data[i].id === id) {
         setValue(data[i].value.toDate())
       }
