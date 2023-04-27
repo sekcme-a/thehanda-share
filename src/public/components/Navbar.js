@@ -37,6 +37,7 @@ import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 
+
 const Navbar = () => {
   const router = useRouter()
   const [open, setOpen] = useState(false);
@@ -221,6 +222,15 @@ const Navbar = () => {
               <ListItemText primary="팀 스케줄" />
             </ListItemButton>
           </List>
+
+          {/* <List component="div" disablePadding>
+            <ListItemButton sx={{ pl: 4 }} onClick={()=>onClick("alarmType")}>
+              <ListItemIcon>
+                <EditNotificationsOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText primary="알람 타입" />
+            </ListItemButton>
+          </List> */}
         </Collapse>
 
         <ListItemButton onClick={()=>onClick("chat")}>

@@ -28,6 +28,7 @@ import SubContent from "src/public/subcontent/components/SubContent"
 import TeamProfile from "src/[team_id]/teamProfile/TeamProfile"
 import Chat from "src/[team_id]/chat/components/Chat"
 import TeamSchedule from "src/[team_id]/teamSchedule/components/TeamSchedule"
+import AlarmType from "src/[team_id]/alarmType/components/AlarmType"
 
 const Index = () => {
     const router = useRouter()
@@ -93,6 +94,7 @@ const Index = () => {
                 slug==="teamProfile" ? <TeamProfile /> :
                 slug==="chat" ? <Chat /> :
                 slug==="teamSchedule" ? <TeamSchedule /> :
+                slug==="alarmType" ? <AlarmType /> :
                 <></>
             }
           </div>

@@ -27,6 +27,8 @@ export function DataProvider(props){
     //calendar [{colorValues:{red:"asdf", blue:"asdf"}, data: [{}] }]
     const [calendar, setCalendar] = useState()
 
+    const [alarmType, setAlarmType] = useState([])
+
     useEffect(()=>{
         const fetchData = async() => {
             if(teamId!==""){
@@ -83,7 +85,9 @@ export function DataProvider(props){
         teamProfile,
         setTeamProfile,
         calendar,
-        setCalendar
+        setCalendar,
+        alarmType,
+        setAlarmType
     }
 
     return <dataContext.Provider value={value} {...props} />

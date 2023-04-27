@@ -34,6 +34,7 @@ import Comments from './Comments'
 import Family from "./Family"
 import Memo from "./Memo"
 import ChatView from "./ChatView"
+import AlarmSetting from "./AlarmSetting"
 
 // ** Styled Tab component
 const Tab = styled(MuiTab)(({ theme }) => ({
@@ -73,10 +74,6 @@ const UserViewRight = (props) => {
       setAlarmValues({...alarmValues, [prop]: event.target.checked})
   }
 
-  const onSubmitClick = () => {
-    db.collection("user").doc(props.uid).update({centerAlarm: alarmValues})
-    alert("적용되었습니다.")
-  }
 
   useEffect(() => {
     let list = []
@@ -109,6 +106,7 @@ const UserViewRight = (props) => {
         aria-label='forced scroll tabs example'
       >
         <Tab value='overview' label='Overview' icon={<AccountOutline />} />
+        <Tab value='alarmSetting' label='AlarmSetting' icon={<AddAlertIcon />} />
         <Tab value='chat' label="Chat" icon={<ChatOutlinedIcon />} />
         <Tab value='family' label='Family' icon={<FamilyRestroomIcon />} />
         <Tab value='timeline' label='Timeline' icon={<TimelineIcon />} />
@@ -125,6 +123,11 @@ const UserViewRight = (props) => {
         <TabPanel sx={{ p: 0 }} value='overview' >
           <Card>
             <UserViewOverview profile_settings={props.profile_settings} additional_data={props.additional_data} />
+          </Card>
+        </TabPanel>
+        <TabPanel sx={{ p: 0 }} value='alarmSetting' >
+          <Card>
+            <AlarmSetting userData={props.userData} />
           </Card>
         </TabPanel>
 
@@ -157,21 +160,6 @@ const UserViewRight = (props) => {
         </TabPanel>
 
 
-        <TabPanel sx={{ p: 0 }} value='alarmSetting'>
-          <Card sx={{padding: "10px 20px"}}>
-                  <div style={{marginTop: "15px"}}>
-              <p>해당 사용자의 분류를 선택해주세요. {`(분류에 따라 알림이 전송됩니다.)`} <Button style={{fontSize: "16px"}} onClick={onSubmitClick}>적용</Button></p>
-              <p style={{fontSize:"14px"}}>{`(해당 사용자의 알림이 꺼져있다면 알림이 보내지지 않습니다.)`} </p>
-              
-               <div style={{marginTop: "20px"}}/>
-                    <FormControlLabel control={<Switch checked={alarmValues.marriage} onChange={onAlarmValuesChange("marriage")} />} label="결혼이민자" />
-                    <FormControlLabel control={<Switch checked={alarmValues.spouse} onChange={onAlarmValuesChange("spouse")} />} label="배우자" />
-                    <FormControlLabel control={<Switch checked={alarmValues.children} onChange={onAlarmValuesChange("children")} />} label="자녀" />
-                    <FormControlLabel control={<Switch checked={alarmValues.family} onChange={onAlarmValuesChange("family")} />} label="가족" />
-                    <FormControlLabel control={<Switch checked={alarmValues.all} onChange={onAlarmValuesChange("all")} />} label="전체" />
-                  </div>
-          </Card>
-        </TabPanel>
         <TabPanel sx={{ p: 0 }} value='comments'>
           <Comments uid={props.uid}/>
         </TabPanel>

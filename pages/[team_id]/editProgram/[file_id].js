@@ -11,7 +11,7 @@ import NoAuthority from "src/[team_id]/index/components/NoAuthority"
 import LoaderGif from "src/public/components/LoaderGif"
 import CustomForm from "src/[team_id]/editProgram/components/CustomForm"
 
-import { Button } from "@mui/material"
+import { Button, FormControlLabel } from "@mui/material"
 import { MobileDateTimePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -35,7 +35,7 @@ const data = [
 const EditProgram = () => {
   const router = useRouter()
   const {team_id, file_id} = router.query
-  const {userData, setTeamId, teamId, setSubContent} = useData()
+  const {userData, setTeamId, teamId, setSubContent, alarmType, setAlarmType } = useData()
 
   const [step, setStep] = useState(0)
 
@@ -73,6 +73,12 @@ const EditProgram = () => {
 
   const [isLoading, setIsLoading] = useState(true)
 
+  const [selectedAlarmType, setSelectedAlarmType] = useState({})
+
+  const onAlarmValuesChange = (id) => {
+    setSelectedAlarmType({...selectedAlarmType, [id]: !selectedAlarmType[id]})
+  }
+
   // const onValuesChangeWithEvent = (event, type) => {
   //   setPostValues({...postValues, ["type"]: event.target.value})
   // }
@@ -82,6 +88,15 @@ const EditProgram = () => {
       id: file_id,
       type: "programEdit"
     })
+    const fetchData = async () => {
+      if(alarmType.length===0){
+        await db.collection("team_admin").doc(team_id).get().then((doc) => {
+          if(doc.data().alarmType)
+            setAlarmType(doc.data().alarmType)
+        })
+      }
+    }
+    fetchData()
   },[postValues])
 
 
@@ -104,6 +119,7 @@ const EditProgram = () => {
           publishStartDate: postDoc.data().publishStartDate?.toDate()
         })
         setAlarmText(`[${postDoc.data().title}] 프로그램이 추가되었습니다.`)
+        setSelectedAlarmType(postDoc.data().selectedAlarmType)
       }
       console.log(postDoc.data())
       setIsLoading(false)
@@ -179,7 +195,8 @@ const EditProgram = () => {
         history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
-        location: location[location.length-1]
+        location: location[location.length-1],
+        selectedAlarmType: selectedAlarmType
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })
@@ -190,7 +207,8 @@ const EditProgram = () => {
         history: [{type:"create", date: new Date(), text:`"${userData.displayName}" 님에 의해 생성됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
-        location: location[location.length-1]
+        location: location[location.length-1],
+        selectedAlarmType: selectedAlarmType
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })
@@ -242,7 +260,16 @@ const EditProgram = () => {
             const querySnapshot = await db.collection("user").where("isAlarmOn", "==", true).where("pushToken", ">", "").get()
             const tokenList = querySnapshot.docs.map((doc)=>{
               if(doc.data().alarmSetting && doc.data().alarmSetting[team_id]){
-                return doc.data().pushToken
+
+                //알람타입에 해당된다면 푸쉬
+                // const result = Object.keys(selectedAlarmType).every(key => {
+                //   if (selectedAlarmType[key]===true) {
+                //     if(doc.data().alarmDetail[key]===true)
+                //       return true;
+                //   }
+                // });
+                // if(result===true)
+                  return doc.data().pushToken
               }else{
                 //알람세팅이 되지 않은 초기상태라면 메세지 보내기
                 return doc.data().pushToken
@@ -403,6 +430,14 @@ const EditProgram = () => {
                       }/>
                     }
                   </div>
+
+                  <div style={{marginTop:"30px "}} />
+                  <h1 style={{fontSize:"15px",marginBottom:"10px"}}>알림을 보낼 타입을 지정해주세요.</h1>
+                  {alarmType.map((item, index) => {
+                    return(
+                      <FormControlLabel key={index} control={<Switch checked={selectedAlarmType[item.id]} onChange={()=>onAlarmValuesChange(item.id)} size="small" />} label={item.text} />
+                    )
+                  })}
 
 
                   <div className={styles.submit_content_item}>

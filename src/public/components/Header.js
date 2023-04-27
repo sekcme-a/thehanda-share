@@ -59,6 +59,8 @@ const Header = (props) => {
       setTitle("메세지 채팅")
     else if (props.location==="teamSchedule")
       setTitle("팀 스케줄")
+    else if (props.location==="alarmType")
+      setTitle("알람 타입 설정")
     db.collection("user").doc(userData.uid).get().then((doc) => {
       setPhoto(doc.data().photoUrl)
     })
