@@ -86,8 +86,8 @@ const UserViewRight = (props) => {
     db.collection("user").doc(props.uid).get().then((doc) => {
       if (doc.data().centerAlarm) 
         setAlarmValues(doc.data().centerAlarm)
-      if(doc.data().family)
-        setFamily(doc.data().family)
+      // if(doc.data().family)
+      //   setFamily(doc.data().family)
     })
     db.collection("team_admin").doc(teamId).collection("users").doc(props.uid).collection("memo").orderBy("createdAt","desc").limit(20).get().then((query)=>{
       if(!query.empty){
@@ -148,7 +148,7 @@ const UserViewRight = (props) => {
 
         <TabPanel sx={{ p: 0 }} value='family'>
           <Card sx={{padding: "10px 20px"}}>
-            <Family family={family}/>
+            <Family uid={props.uid} />
           </Card>
         </TabPanel>
 

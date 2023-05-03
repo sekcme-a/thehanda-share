@@ -29,15 +29,14 @@ export function DataProvider(props){
 
     const [alarmType, setAlarmType] = useState([])
 
+    //프로그램 스케쥴에 추가할 사용자지정 스케쥴 (프로그램에 포함되어있지 않은 스케쥴)
+    const [programCustomSchedule, setProgramCustomSchedule] = useState()
+    //프로그램 스케쥴들
+    const [programSchedule, setProgramSchedule] = useState()
+
     useEffect(()=>{
         const fetchData = async() => {
             if(teamId!==""){
-                //user중 deleted로 표시되있는 유저 삭제 및 해당 유저에 대한 내용 삭제
-                // db.collection("team").doc(teamId).collection("users").get().then(async(query) => {
-                //     query.docs.map(async(doc) => {
-                //         const userDoc = await db.collection("user").doc(doc.id).
-                //     })
-                // })
                 db.collection("user").where("deleted","==",true).get().then((querySnapshot) => {
                     querySnapshot.docs.map((doc) => {
                       db.collection("user").doc(doc.id).delete()
@@ -60,6 +59,9 @@ export function DataProvider(props){
                     else
                         setCalendar({colorValues: {red:"",yellow:"",green:"",blue:"",purple:""}, data:[]})
                 })
+
+
+ 
             }
         }
         fetchData() 
@@ -87,7 +89,11 @@ export function DataProvider(props){
         calendar,
         setCalendar,
         alarmType,
-        setAlarmType
+        setAlarmType,
+        programCustomSchedule,
+        setProgramCustomSchedule,
+        programSchedule,
+        setProgramSchedule
     }
 
     return <dataContext.Provider value={value} {...props} />

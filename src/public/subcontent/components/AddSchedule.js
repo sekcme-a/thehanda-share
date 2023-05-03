@@ -39,7 +39,7 @@ const AddSchedule = () => {
       url:""
     },
     color: "red",
-    allDay: true,
+    allDay: false,
   })
 
   useEffect(()=>{
@@ -103,7 +103,7 @@ const AddSchedule = () => {
         url:""
       },
       color: "red",
-      allDay: true,
+      allDay: false,
     })
 
   }
@@ -162,12 +162,12 @@ const AddSchedule = () => {
         />
       </LocalizationProvider>
 
-      <FormControlLabel
+      {/* <FormControlLabel
         control={
           <Checkbox checked={values.allDay} onChange={(e)=>onValuesChange("allDay", e.target.checked)}/>
         }
         label="종일 일정" sx={{mt:"5px"}}
-      />
+      /> */}
 
       <FormControl fullWidth sx={{mt:"13px"}}>
         {/* <InputLabel id="demo-simple-select-label">색깔</InputLabel> */}

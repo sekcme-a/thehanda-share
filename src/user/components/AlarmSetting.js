@@ -115,7 +115,7 @@ const AlarmSetting = ({userData}) => {
     <>
       <Card sx={{padding: "10px 20px"}}>
       <div style={{marginTop: "15px"}}>
-      <p>해당 사용자의 분류를 선택해주세요. {`(분류에 따라 알림이 전송됩니다.)`} <Button style={{fontSize: "16px"}} onClick={onSubmitClick} variant="contained" size="small">적용</Button></p>
+      <p>해당 사용자의 분류를 선택해주세요. {`(분류에 따라 알림이 전송됩니다.)`} <Button onClick={onSubmitClick} variant="contained" size="small">적 용</Button></p>
       {/* <p style={{fontSize:"14px"}}>{`(해당 사용자의 알림이 꺼져있다면 알림이 보내지지 않습니다.)`} </p> */}
         {isAlarmOn ? 
         <div style={{fontSize:"14px", marginTop:"10px"}}>해당 사용자의 알림이 켜져있습니다. </div>

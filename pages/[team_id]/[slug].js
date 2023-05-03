@@ -28,6 +28,7 @@ import SubContent from "src/public/subcontent/components/SubContent"
 import TeamProfile from "src/[team_id]/teamProfile/TeamProfile"
 import Chat from "src/[team_id]/chat/components/Chat"
 import TeamSchedule from "src/[team_id]/teamSchedule/components/TeamSchedule"
+import ProgramSchedule from "src/[team_id]/programSchedule/components/ProgramSchedule"
 import AlarmType from "src/[team_id]/alarmType/components/AlarmType"
 
 const Index = () => {
@@ -56,6 +57,12 @@ const Index = () => {
     useEffect(()=>{
         setSubContent("index")
         if(slug==="teamSchedule"){
+            setSubContent({
+                type: slug,
+                teamId: team_id,
+            })
+        }
+        if(slug==="programSchedule"){
             setSubContent({
                 type: slug,
                 teamId: team_id,
@@ -95,6 +102,7 @@ const Index = () => {
                 slug==="chat" ? <Chat /> :
                 slug==="teamSchedule" ? <TeamSchedule /> :
                 slug==="alarmType" ? <AlarmType /> :
+                slug==="programSchedule" ? <ProgramSchedule /> :
                 <></>
             }
           </div>

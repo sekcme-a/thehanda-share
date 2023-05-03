@@ -11,7 +11,7 @@ import koLocale from '@fullcalendar/core/locales/ko';
 import styles from "../styles/Calendar.module.css"
 import { Button, ButtonBase, Checkbox, TextField, Dialog } from "@mui/material"
 
-import { MobileDateTimePicker } from '@mui/x-date-pickers'
+import { MobileDatePicker, MobileDateTimePicker } from '@mui/x-date-pickers'
 // import { TimePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -24,13 +24,41 @@ import Select from '@mui/material/Select';
 import { firestore as db } from 'firebase/firebase';
 import { useRouter } from 'next/router';
 
-const Calendar = ({events, setEvents, editable}) => {
+
+/**
+ * events: calendar.data
+ * setEvents: setCalendar
+ * colorValues: calendar.colorValues
+ * editable: boolean //편집이 가능한지 아닌지
+ * hasAddScheduleButton: boolean  //스케쥴 추가 버튼 생성 or 미 생성
+ * autoUrl: url주소  프로그램 추가 클릭 시 자동으로 해당 프로그램으로 이동하는 url 생성
+ */
+const Calendar = ({events, setEvents, editable, hasAddScheduleButton, autoUrl}) => {
   const [data, setData] = useState()
   const [isLoading, setIsLoading] = useState(true)
   const [isOpenDialog, setIsOpenDialog] = useState(false)
+  const [isOpenAddScheduleDialog, setIsOpenAddScheduleDialog] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState({})
   const [changedSelectedEvent, setChangedSelectedEvent] = useState({})
   const [triggerReload, setTriggerReload] = useState(true)
+
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    start: new Date(),
+    end: new Date(),
+    // start: new Date().toDateString(),
+    // end: new Date().toDateString(),
+    // allDay: true,
+    extendedProps: {
+      memo: '',
+      id: Math.floor(Math.random() * 100000) + 1,
+      url: autoUrl ? autoUrl : ""
+    },
+    color: "red",
+    allDay: false,
+  })
+
+
   const router = useRouter()
   useEffect(()=>{
     console.log(events)
@@ -50,6 +78,25 @@ const Calendar = ({events, setEvents, editable}) => {
      setChangedSelectedEvent({...changedSelectedEvent, extendedProps:{...changedSelectedEvent.extendedProps, url: value}})
   }
 
+
+  //새로운 스케쥴 추가
+  const onNewValuesChange = (type, value) => {
+    if(editable){
+      setNewEvent({...newEvent, [type]: value})
+    }
+  }
+  const onNewMemoChange = (value) => {
+    if(editable)
+    setNewEvent({...newEvent, extendedProps:{...newEvent.extendedProps, memo: value}})
+  }
+  const onNewUrlChange = (value) => {
+    if(editable)
+     setNewEvent({...newEvent, extendedProps:{...newEvent.extendedProps, url: value}})
+  }
+
+
+
+
   const calendarRef = useRef(null)
 
   const COLOR_PALLETE = {
@@ -63,7 +110,7 @@ const Calendar = ({events, setEvents, editable}) => {
   useEffect(()=>{
     setIsLoading(true)
     console.log(events)
-    const temp = events?.map((event) => {
+    const temp = events?.data?.map((event) => {
       let newEvent = {...event}
       console.log(event)
       if(event.start?.seconds)
@@ -80,7 +127,8 @@ const Calendar = ({events, setEvents, editable}) => {
         newEvent={...newEvent, backgroundColor: COLOR_PALLETE.blue.bg, borderColor: COLOR_PALLETE.blue.bg, textColor: COLOR_PALLETE.blue.text }
       if(event.color==="purple")
         newEvent={...newEvent, backgroundColor: COLOR_PALLETE.purple.bg, borderColor: COLOR_PALLETE.purple.bg, textColor: COLOR_PALLETE.purple.text }
-        // newEvent={...newEvent, backgroundColor: COLOR_PALLETE.yellow.bg, borderColor: COLOR_PALLETE.yellow.bg, textColor: COLOR_PALLETE.yellow.text, classNames:["asdf"] }
+      // if(event.allDay && newEvent.end instanceof Date)
+      //   newEvent={...newEvent, end: newEvent.end.setHours(23)}
       return newEvent
     })
     console.log(temp)
@@ -117,8 +165,8 @@ const Calendar = ({events, setEvents, editable}) => {
     })
     setChangedSelectedEvent({
       title: event._def.title,
-      start: event._instance.range.start,
-      end: event._instance.range.end,
+      start: new Date(event._instance.range.start.getTime()-(9 * 60 * 60 * 1000)),
+      end: new Date(event._instance.range.end.getTime()-(9 * 60 * 60 * 1000)),
       allDay: event._def.allDay,
       color: color,
       extendedProps: {
@@ -132,7 +180,7 @@ const Calendar = ({events, setEvents, editable}) => {
     if(COLOR_PALLETE.red.bg===rgb)
       return "red"
     else if(COLOR_PALLETE.yellow.bg===rgb)
-      return "blue"
+      return "yellow"
     else if(COLOR_PALLETE.green.bg===rgb)
       return "green"
     else if(COLOR_PALLETE.blue.bg===rgb)
@@ -159,33 +207,74 @@ const Calendar = ({events, setEvents, editable}) => {
     setEvents((prevData) => {
       let prevEvents = prevData
       const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
-      prevData.data[index] = {...prevData.data[index], ...changedSelectedEvent}
+      if(changedSelectedEvent.allDay)
+        prevData.data[index] = {...prevData.data[index], ...changedSelectedEvent, end: changedSelectedEvent.end}
+        // prevData.data[index] = {...prevData.data[index], ...changedSelectedEvent, end: changedSelectedEvent.end.setDate(changedSelectedEvent.end.getDate() + 1)}
+      else
+        prevData.data[index] = {...prevData.data[index], ...changedSelectedEvent}
       return prevData
     })
     setTriggerReload(!triggerReload)
   }
+  function onDeleteClick (){
+    setEvents((prevData) => {
+      let prevEvents = prevData
+      console.log(prevData)
+      // const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
+      const filteredData = prevData.data.filter(obj => obj.extendedProps.id !== selectedEvent.extendedProps.id && obj.title !==selectedEvent.title);
+      // if(changedSelectedEvent.allDay)
+        // prevData.data[index] = undefined
+      return {...prevData, data: filteredData}
+    })
+    setIsOpenDialog(false)
+    setTriggerReload(!triggerReload)
+  }
 
-  // const onSubmitClick =async() => {
-  //   if(editable){
-  //     console.log(events)
-  //     console.log(selectedEvent)
 
-
-  //     setEvents((prevData) => {
-  //       let prevEvents = prevData
-  //       console.log(prevData)
-  //       const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
-  //       console.log(index)
-  //       console.log(changedSelectedEvent)
-  //       prevData.data[index] = {...prevData.data[index], data: changedSelectedEvent}
-  //       console.log(prevData)
-  //       return prevData
-  //     })
-  //   }
-  // }
+  function onNewSubmitClick(){
+    setEvents((prevData) => {
+      // let prevEvents = prevData
+      // const index = prevEvents.data.findIndex((event) => event.extendedProps.id === selectedEvent.extendedProps.id && event.title === selectedEvent.title)
+      // prevData.data[index] = {...prevData.data[index], ...changedSelectedEvent}
+      console.log(newEvent)
+      if(prevData.data===undefined)
+        prevData = {data: [newEvent]}
+      else
+        prevData.data[prevData.data.length] = {...newEvent}
+      console.log(prevData)
+      return prevData
+    })
+    setIsOpenAddScheduleDialog(false)
+    setTriggerReload(!triggerReload)
+  }
+  
 
   const onGoToProgramClick = () => {
-    router.push(changedSelectedEvent.extendedProps.url)
+    // router.push(changedSelectedEvent.extendedProps.url)
+    window.open(changedSelectedEvent.extendedProps.url, "_blank", "noopener, noreferrer");
+  }
+  const onGoToEditProgramClick = () => {
+    // router.push(changedSelectedEvent.extendedProps.url)
+    window.open(changedSelectedEvent.extendedProps.editProgramUrl, "_blank", "noopener, noreferrer");
+  }
+
+  const onAddScheduleClick = () => {
+    setNewEvent({
+      title: '',
+      start: new Date(),
+      end: new Date(),
+      // start: new Date().toDateString(),
+      // end: new Date().toDateString(),
+      // allDay: true,
+      extendedProps: {
+        memo: '',
+        id: Math.floor(Math.random() * 100000) + 1,
+        url: autoUrl ? autoUrl : ""
+      },
+      color: "red",
+      allDay: false,
+    })
+    setIsOpenAddScheduleDialog(true)
   }
 
   if(isLoading)
@@ -193,6 +282,43 @@ const Calendar = ({events, setEvents, editable}) => {
 
   return (
     <>
+      {hasAddScheduleButton &&
+        <Button variant="contained" onClick={onAddScheduleClick} size="small" sx={{mb:"10px"}}>스케쥴 추가 +</Button>
+      }
+      <ul className={styles.color_container}>
+        
+        {events.colorValues?.red &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.red}`} />
+            <p className={`${styles.color_text} ${styles.red}`} >{events.colorValues.red}</p>
+          </li>
+        }
+        {events.colorValues?.yellow &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.yellow}`} />
+            <p className={`${styles.color_text} ${styles.yellow}`} >{events.colorValues.yellow}</p>
+          </li>
+        }
+        {events.colorValues?.green &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.green}`} />
+            <p className={`${styles.color_text} ${styles.green}`} >{events.colorValues.green}</p>
+          </li>
+        }
+        {events.colorValues?.blue &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.blue}`} />
+            <p className={`${styles.color_text} ${styles.blue}`} >{events.colorValues.blue}</p>
+          </li>
+        }
+        {events.colorValues?.purple &&
+          <li className={styles.item_container}>
+            <div className={`${styles.dot} ${styles.purple}`} />
+            <p className={`${styles.color_text} ${styles.purple}`} >{events.colorValues.purple}</p>
+          </li>
+        }
+      </ul>
+
       <FullCalendar
         plugins={[interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin,]}
         initialView =  'dayGridMonth'
@@ -207,7 +333,7 @@ const Calendar = ({events, setEvents, editable}) => {
         }}
         events={data}
         // eventColor="rgb(154, 111, 195)"
-        // events={'https://fullcalendar.io/api/demo-feeds/events.json?overload-day'}
+        // events={'https://fullio/api/demo-feeds/events.json?overload-day'}
         editable={editable}
         eventClick={handleEventClick}
         // className={styles.calendar}
@@ -235,28 +361,46 @@ const Calendar = ({events, setEvents, editable}) => {
           <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="제목" value={changedSelectedEvent.title} onChange={(e)=>onValuesChange("title", e.target.value)}/>
           <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="이동할 주소" placeholder="https://dahanda.netlify.app/" value={changedSelectedEvent.extendedProps?.url} onChange={(e)=>onUrlChange(e.target.value)}/>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
+            {changedSelectedEvent.allDay ?
+              <MobileDatePicker
+                label="시작일"
+                value={changedSelectedEvent.start}
+                onChange={(e)=>onValuesChange("start", e)}
+                renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
+              />
+            :
             <MobileDateTimePicker
               label="시작일"
               value={changedSelectedEvent.start}
               onChange={(e)=>onValuesChange("start", e)}
               renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
             />
+            }
           </LocalizationProvider>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
+            {changedSelectedEvent.allDay ? 
+            <MobileDatePicker
+            label="종료일"
+            value={changedSelectedEvent.end.setHours(23)}
+            onChange={(e)=>onValuesChange("end", e)}
+            renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
+          />
+            :
             <MobileDateTimePicker
               label="종료일"
               value={changedSelectedEvent.end}
               onChange={(e)=>onValuesChange("end", e)}
               renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
             />
+            }
           </LocalizationProvider>
-
+{/* 
           <FormControlLabel
             control={
               <Checkbox checked={changedSelectedEvent.allDay} onChange={(e)=>onValuesChange("allDay", e.target.checked)}/>
             }
             label="종일 일정" sx={{mt:"5px"}}
-          />
+          /> */}
 
           <FormControl fullWidth sx={{mt:"13px"}}>
             <p style={{fontSize:"12px", marginBottom:"5px"}}>색상선택</p>
@@ -284,6 +428,89 @@ const Calendar = ({events, setEvents, editable}) => {
           {editable && 
             <div className={styles.button_container}>
               <Button onClick={onSubmitClick} variant="contained" size="small" fullWidth>일정 편집</Button>
+            </div>
+          }
+          {editable && 
+            <div className={styles.button_container}>
+              <Button onClick={onDeleteClick} variant="contained" size="small" fullWidth sx={{bgcolor:"rgb(170,0,0)"}}>일정 삭제</Button>
+            </div>
+          }
+          {changedSelectedEvent?.extendedProps?.url && 
+            <div className={styles.button_container}>
+              <Button onClick={onGoToProgramClick} variant="contained" size="small" fullWidth>프로그램 확인</Button>
+            </div>
+          }
+          {changedSelectedEvent?.extendedProps?.editProgramUrl && 
+            <div className={styles.button_container}>
+              <Button onClick={onGoToEditProgramClick} variant="contained" size="small" fullWidth>해당 프로그램 편집으로 이동</Button>
+            </div>
+          }
+        </div>
+      </Dialog>
+
+
+
+
+
+      <Dialog open={isOpenAddScheduleDialog} onClose={()=>setIsOpenAddScheduleDialog(false)}>
+      <div className={styles.dialog_container}>
+          
+          <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="제목" value={newEvent.title} onChange={(e)=>onNewValuesChange("title", e.target.value)}/>
+         
+          <TextField variant="standard" sx={{mt:"5px"}} fullWidth size="small" label="이동할 주소" placeholder="https://dahanda.netlify.app/"
+            value={newEvent.extendedProps?.url} onChange={(e)=>onNewUrlChange(e.target.value)}
+          />
+         
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <MobileDateTimePicker
+              label="시작일"
+              value={newEvent.start}
+              onChange={(e)=>onNewValuesChange("start", e)}
+              renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
+            />
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <MobileDateTimePicker
+              label="종료일"
+              value={newEvent.end}
+              onChange={(e)=>onNewValuesChange("end", e)}
+              renderInput={params => <TextField {...params} sx={{ width: "100%" }} variant="standard" style={{marginTop:"5px"}}/>}
+            />
+          </LocalizationProvider>
+
+          {/* <FormControlLabel
+            control={
+              <Checkbox checked={newEvent.allDay} onChange={(e)=>onNewValuesChange("allDay", e.target.checked)}/>
+            }
+            label="종일 일정" sx={{mt:"5px"}}
+          /> */}
+
+          <FormControl fullWidth sx={{mt:"13px"}}>
+            <p style={{fontSize:"12px", marginBottom:"5px"}}>색상선택</p>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={newEvent.color}
+              label="색깔"
+              onChange={(e)=>onNewValuesChange("color", e.target.value)}
+              size="small"
+              variant="standard"
+
+            >
+              <MenuItem value="red">빨강</MenuItem>
+              <MenuItem value="yellow">노랑</MenuItem>
+              <MenuItem value="green">초록</MenuItem>
+              <MenuItem value="blue">파랑</MenuItem>
+              <MenuItem value="purple">보라</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField variant="standard" multiline  sx={{mt:"5px"}} fullWidth size="small" label="추가 메모" value={newEvent.extendedProps?.memo} onChange={(e)=>onNewMemoChange(e.target.value)}/>
+
+          <div style={{marginTop:"20px"}} />
+          {editable && 
+            <div className={styles.button_container}>
+              <Button onClick={onNewSubmitClick} variant="contained" size="small" fullWidth>일정 추가</Button>
             </div>
           }
           {changedSelectedEvent?.extendedProps?.url && 

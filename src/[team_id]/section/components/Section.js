@@ -28,6 +28,8 @@ const Section = ({mode}) => {
   const [items, setItems] = useState([])
   const [components, setComponents] = useState([])
   const [value, setValue] = useState("")
+  const [prevValue, setPrevValue] = useState("")
+  const [newValue, setNewValue] = useState("")
   const [isOpenDialog, setIsOpenDialog] = useState(false)
   const [dialogMode, setDialogMode] = useState("")
   const [isLoading, setIsLoading] = useState(true)
@@ -105,11 +107,44 @@ const Section = ({mode}) => {
       }
     }
     if(hasItem){
-      if(!confirm("섹션을 삭제하시겠습니까?"))
+      if(!confirm("섹션을 삭제하시겠습니까?\n모든 프로그램에 해당 섹션이 지워집니다."))
         return
       setItems([...temp])
       setComponents([...temp2])
       setValue("")
+      setIsOpenDialog(false)
+    }else
+      alert("일치하는 섹션명이 없습니다.")
+  }
+
+  const onEditSectionClick = () => {
+    setDialogMode("edit")
+    setIsOpenDialog(true)
+  }
+  const onEditClick = () => {
+    let hasItem = false
+    let temp =[]
+    let temp2 = []
+    for(const item of items){
+      if(item.name===prevValue){
+        hasItem = true
+        temp.push({...item, name: newValue})
+        temp2.push(renderComponent({...item, name: newValue }))
+      }
+      else{
+        temp.push(item)
+        temp2.push(renderComponent(item))
+      }
+    console.log(temp)
+    console.log(temp2)
+    }
+    if(hasItem){
+      if(!confirm("섹션명을 변경하시겠습니까?"))
+        return
+      setItems([...temp])
+      setComponents([...temp2])
+      setPrevValue("")
+      setNewValue("")
       setIsOpenDialog(false)
     }else
       alert("일치하는 섹션명이 없습니다.")
@@ -134,6 +169,7 @@ const Section = ({mode}) => {
       })
     }
   }
+
 
   if(isLoading)
     return(<></>)
@@ -207,6 +243,41 @@ const Section = ({mode}) => {
           <Card
             sx={{ cursor: 'pointer', height: "125px" }}
             onClick={() => {
+              onEditSectionClick()
+            }}
+          >
+            <Grid container sx={{ height: '100%' }}>
+              <Grid item xs={5}>
+                <Box sx={{ height: '100%', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                  <img width={65} height={120} alt='add-role' src='/john_standing.png' />
+                </Box>
+              </Grid>
+              <Grid item xs={7}>
+                <CardContent>
+                  <Box sx={{ textAlign: 'right' }}>
+                    <Button
+                      variant='contained'
+                      sx={{ mb: 1, whiteSpace: 'nowrap', backgroundColor:"rgb(0,0,194)" }}
+                      onClick={() => {
+                        onEditSectionClick()
+                      }}
+                    >
+                      섹션명 변경
+                    </Button>
+                    <Typography style={{wordBreak: "keep-all"}}>섹션명을 변경합니다.</Typography>
+                  </Box>
+                </CardContent>
+              </Grid>
+            </Grid>
+          </Card>
+        </Grid>
+
+
+
+        <Grid item xs={14} sm={6} lg={6}>
+          <Card
+            sx={{ cursor: 'pointer', height: "125px" }}
+            onClick={() => {
               onDeleteSectionClick()
             }}
           >
@@ -255,6 +326,14 @@ const Section = ({mode}) => {
             <h1>추가할 섹션명을 입력해주세요</h1>
             <TextField variant="standard" value={value} onChange={(e)=>setValue(e.target.value)}/>
             <Button onClick={onAddClick}>추가</Button>
+          </div>
+        }
+        {dialogMode==="edit" &&
+          <div className={styles.dialog_container}>
+            <h1>이름을 변경할 섹션명과 새로운 섹션명을 입력해주세요.</h1>
+            <TextField variant="standard" value={prevValue} onChange={(e)=>setPrevValue(e.target.value)} fullWidth label="변경할 섹션명" placeholder='변경할 섹션명을 입력해주세요.'/>
+            <TextField variant="standard" sx={{mt:"10px"}} value={newValue} onChange={(e)=>setNewValue(e.target.value)} fullWidth label="새로운 섹션명" placeholder='새로운 섹션명을 입력해주세요.' />
+            <Button onClick={onEditClick} variant='contained' sx={{mt:"20px"}} size="small">변경</Button>
           </div>
         }
         {dialogMode==="delete" &&

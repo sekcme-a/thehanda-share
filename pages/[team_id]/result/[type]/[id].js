@@ -79,6 +79,8 @@ const Result = () => {
           query.docs.map(async (doc) => {
             let tempArray = []
             const userDoc = await db.collection("user").doc(doc.id).get();
+            if(!userDoc.exists)
+              return;
             const tempDataList = {
               relation: "신청자",
               uid: userDoc.id,

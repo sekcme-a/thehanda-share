@@ -11,7 +11,7 @@ import NoAuthority from "src/[team_id]/index/components/NoAuthority"
 import LoaderGif from "src/public/components/LoaderGif"
 import CustomForm from "src/[team_id]/editProgram/components/CustomForm"
 
-import { Button, FormControlLabel } from "@mui/material"
+import { Button, Dialog, FormControlLabel } from "@mui/material"
 import { MobileDateTimePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -22,6 +22,7 @@ import { Backdrop } from "@mui/material"
 import Form from "src/form/Form"
 import Article from "src/article/components/Article"
 import SubContent from "src/public/subcontent/components/SubContent"
+import Calendar from "src/public/components/Calendar"
 
 import axios from "axios"
 import { sendNotification } from "src/public/hooks/notification"
@@ -38,6 +39,8 @@ const EditProgram = () => {
   const {userData, setTeamId, teamId, setSubContent, alarmType, setAlarmType } = useData()
 
   const [step, setStep] = useState(0)
+
+  const [calendar, setCalendar] = useState({colorValues: {}, data: []})
 
   const handleStep = (num) => {setStep(num)}
 
@@ -57,12 +60,14 @@ const EditProgram = () => {
     info:[],
     introduce: [],
     schedule: [],
+    // calendar: {colorValues: {}, data: []},
     formData: [],
     deadline: undefined,
-    programStartDate: new Date(),
+    programStartDate: undefined,
     publishStartDate: new Date(),
     hasLimit: false,
     limit: "0",
+    hasSchedule: false,
   })
   const [sections, setSections] = useState([])
   const [rejectText, setRejectText] = useState("")
@@ -74,6 +79,45 @@ const EditProgram = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   const [selectedAlarmType, setSelectedAlarmType] = useState({})
+  //켜져있으면 알림타입을 설정하지 않은 해당 센터의 사용자들에게도 알림발송(알림 끄기 인원 제외)
+  const [selectAll, setSelectAll] = useState(false)
+
+
+  //스케쥴 backdrop control
+  const [openScheduleBackdrop, setOpenScheduleBackdrop] = useState("")
+  //스케쥴 color 임시input 데이터
+  const [colorInput, setColorInput] = useState({
+    red:"",
+    orange:"",
+    yellow:"",
+    green:"",
+    blue:"",
+    purple:""
+  })
+  //스케쥴 color 데이터 (backdrop에서 적용시 적용됨)
+  // const [colorValues, setColorValues] = useState({
+  //   red:"",
+  //   orange:"",
+  //   yellow:"",
+  //   green:"",
+  //   blue:"",
+  //   purple:""
+  // })
+
+  const onColorValueChange= (color, value) => {
+    setColorInput({...colorInput, [color]: value})
+  }
+  const onColorSubmit = async() => {
+    if(confirm("적용하시겠습니까?\n(모든 프로그램 스케쥴에 동일 적용됩니다.)")){
+      await db.collection("team").doc(team_id).update({
+        programScheduleColorValues: colorInput
+      })
+      setCalendar({...calendar, colorValues: colorInput})
+      alert("적용되었습니다.")
+    }
+  }
+
+
 
   const onAlarmValuesChange = (id) => {
     setSelectedAlarmType({...selectedAlarmType, [id]: !selectedAlarmType[id]})
@@ -111,17 +155,25 @@ const EditProgram = () => {
         router.push(`/${team_id}/section/program`)
       }
       
-      const postDoc = await db.collection("team").doc(team_id).collection("programs").doc(file_id).get()
+
+      //기존 프로그램 데이터 받아오기
+      const postDoc = await db.collection("team").doc(team_id).collection("programs").doc(file_id).get() 
+      //스케쥴 타입 데이터 받아오기
+      const calendarDoc = await db.collection("team").doc(team_id).get()
       if(postDoc.exists){
         setPostValues({...postDoc.data(),
           deadline: postDoc.data().deadline?.toDate(),
           programStartDate: postDoc.data().programStartDate?.toDate(),
-          publishStartDate: postDoc.data().publishStartDate?.toDate()
+          publishStartDate: postDoc.data().publishStartDate?.toDate(),
+          // calendar: {data: postDoc.data().calendar}
         })
+        console.log(postDoc.data().calendar)
+        setCalendar({data: postDoc.data().calendar, colorValues: calendarDoc.data().programScheduleColorValues})
         setAlarmText(`[${postDoc.data().title}] 프로그램이 추가되었습니다.`)
         setSelectedAlarmType(postDoc.data().selectedAlarmType)
       }
-      console.log(postDoc.data())
+      
+
       setIsLoading(false)
     }
     if(userData)
@@ -129,6 +181,10 @@ const EditProgram = () => {
     else
       router.push("/")
   },[])
+
+  useEffect(()=>{
+    console.log(calendar)
+  },[calendar])
 
   const onPreviewClick = () => {
     setOpenBackdrop(true)
@@ -140,11 +196,6 @@ const EditProgram = () => {
     setPostValues({...postValues, ["formData"]: [...data]})
   }
 
-
-  useEffect(()=>{
-    const location = sessionStorage.getItem("prevProgramLocId").split("/")
-    console.log(sessionStorage.getItem("prevProgramLocId").split("/"))
-  },[])
 
   const onSubmitClick = async () => {
     console.log(postValues.deadline)
@@ -160,8 +211,10 @@ const EditProgram = () => {
           alert("썸네일 이미지를 등록해주세요."); return}
         else if(postValues.deadline===undefined){
           alert("신청 마감일을 입력해주세요.");return}
-        else if(postValues.deadline < new Date()){
-          alert("신청마감일은 현재시각보다 미래의 시간이여야 합니다."); return}
+        else if(postValues.programStartDate===undefined){
+          alert("프로그램 최초 시작일을 입력해주세요.");return}
+        // else if(postValues.deadline > postValues.programStartDate){
+        //   alert("프로그램 최초 시작일은 신청 마감일 이후여야 합니다."); return}
       }
     }
     if(postValues.hasLimit && postValues.limit==="0"){
@@ -170,9 +223,9 @@ const EditProgram = () => {
     }
 
     
-    let location = sessionStorage.getItem("prevProgramLocId").split("/")
+    let location = sessionStorage.getItem("prevProgramLocId")?.split("/")
     //현재 위치가 루트폴더가 아니라면 폴더들을 탐색해 현재 위치가 존재하는지 확인해야함
-    if(location.length>1){
+    if(location?.length>1){
       //해당 프로그램을 저장하려는 location경로가 없는 경로라면(해당 프로그램을 편집할때 다른 유저가 해당 폴더를 삭제한 경우 보완) 루트위치에 저장.
       const folderLocationDoc = await db.collection("team_admin").doc(team_id).collection("folders").doc(location[location.length-1]).get()
       if(!folderLocationDoc.exists){
@@ -195,8 +248,8 @@ const EditProgram = () => {
         history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
-        location: location[location.length-1],
-        selectedAlarmType: selectedAlarmType
+        selectedAlarmType: selectedAlarmType,
+        calendar: calendar.data
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })
@@ -208,7 +261,8 @@ const EditProgram = () => {
         savedAt: new Date(),
         lastSaved: userData.displayName,
         location: location[location.length-1],
-        selectedAlarmType: selectedAlarmType
+        selectedAlarmType: selectedAlarmType,
+        calendar: calendar.data
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })
@@ -260,15 +314,14 @@ const EditProgram = () => {
             const querySnapshot = await db.collection("user").where("isAlarmOn", "==", true).where("pushToken", ">", "").get()
             const tokenList = querySnapshot.docs.map((doc)=>{
               if(doc.data().alarmSetting && doc.data().alarmSetting[team_id]){
-
                 //알람타입에 해당된다면 푸쉬
-                // const result = Object.keys(selectedAlarmType).every(key => {
-                //   if (selectedAlarmType[key]===true) {
-                //     if(doc.data().alarmDetail[key]===true)
-                //       return true;
-                //   }
-                // });
-                // if(result===true)
+                const result = Object.keys(selectedAlarmType).every(key => {
+                  if (selectedAlarmType[key]===true) {
+                    if(doc.data().alarmDetail&&doc.data().alarmDetail[key]===true)
+                      return true;
+                  }
+                });
+                if(result===true || selectAll===true)
                   return doc.data().pushToken
               }else{
                 //알람세팅이 되지 않은 초기상태라면 메세지 보내기
@@ -285,7 +338,7 @@ const EditProgram = () => {
                   const result = await sendNotification(token,"예정 프로그램", alarmText);
                 } catch (e) {
                   console.log(e);
-                }
+                } 
               })
             ).then(() => {
               console.log("All notifications sent successfully");
@@ -314,7 +367,15 @@ const EditProgram = () => {
             const querySnapshot = await db.collection("user").where("isAlarmOn", "==", true).where("pushToken", ">", "").get()
             const tokenList = querySnapshot.docs.map((doc)=>{
               if(doc.data().alarmSetting && doc.data().alarmSetting[team_id]){
-                return doc.data().pushToken
+                //알람타입에 해당된다면 푸쉬
+                const result = Object.keys(selectedAlarmType).every(key => {
+                  if (selectedAlarmType[key]===true) {
+                    if(doc.data().alarmDetail&&doc.data().alarmDetail[key]===true)
+                      return true;
+                  }
+                });
+                if(result===true || selectAll===true)
+                  return doc.data().pushToken
               }else{
                 //알람세팅이 되지 않은 초기상태라면 메세지 보내기
                 return doc.data().pushToken
@@ -408,7 +469,7 @@ const EditProgram = () => {
                     <div style={{width:"15px", marginTop:"15px"}} />
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <MobileDateTimePicker
-                        label="프로그램 시작일을 선택해주세요."
+                        label="프로그램 최초 시작일을 선택해주세요."
                         value={postValues.programStartDate}
                         onChange={(e)=>setPostValues({...postValues, ["programStartDate"]: e})}
                         renderInput={params => <TextField {...params} />}
@@ -432,12 +493,44 @@ const EditProgram = () => {
                   </div>
 
                   <div style={{marginTop:"30px "}} />
-                  <h1 style={{fontSize:"15px",marginBottom:"10px"}}>알림을 보낼 타입을 지정해주세요.</h1>
-                  {alarmType.map((item, index) => {
+                  <h1 style={{fontSize:"15px",marginBottom:"3px"}}>알림을 보낼 타입을 지정해주세요.</h1>
+                  <p style={{fontSize:"11px", marginBottom:"10px"}}>*전체 알림을 선택하면 알림 타입을 지정하지 않은 사용자들을 포함해 센터내 모든 사용자들에게 발송됩니다.</p>
+                  <FormControlLabel control={<Switch checked={selectAll} onChange={(e)=>setSelectAll(e.target.checked)} size="small" />} label="전체 알림" />
+                  {!selectAll && alarmType.map((item, index) => {
                     return(
                       <FormControlLabel key={index} control={<Switch checked={selectedAlarmType[item.id]} onChange={()=>onAlarmValuesChange(item.id)} size="small" />} label={item.text} />
                     )
                   })}
+
+
+
+
+                  <div style={{marginTop:"30px "}} />
+                  <h1 style={{fontSize:"15px",marginBottom:"3px"}}>일정을 작성해주세요.</h1>
+                  {/* <p style={{fontSize:"11px", marginBottom:"10px"}}>*프로그램 최초 시작일 기준 1년내의 일저.</p> */}
+                  <FormControlLabel control={<Switch checked={postValues.hasSchedule} onChange={(e)=>setPostValues({...postValues, hasSchedule: e.target.checked})} size="small" />} label="스케쥴 사용 여부" />
+                  {postValues.hasSchedule && 
+                    <>
+                      <div style={{marginTop:"20px", marginBottom:"10px"}}>
+                        <Button variant="contained" onClick={()=>{
+                          if(calendar.colorValues)
+                            setColorInput(calendar.colorValues);
+                          setOpenScheduleBackdrop("editColor")
+                        }}
+                        size="small"
+                        sx={{bgcolor:"rgb(0,125,0)"}}
+                        >
+                          컬러 타입 편집
+                        </Button>
+                      </div>
+                      <Calendar events={calendar} setEvents={setCalendar} editable={true} hasAddScheduleButton={true} autoUrl={`https://dahanda.netlify.app/article/${team_id}/${file_id}`}/>
+                    </>
+                  }
+
+
+
+
+
 
 
                   <div className={styles.submit_content_item}>
@@ -494,13 +587,16 @@ const EditProgram = () => {
           </div>
         </div>
       </div>
-      <Backdrop
+
+
+      <Dialog
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={openBackdrop}
-        onClick={()=>setOpenBackdrop(false)}
+        onClose={()=>setOpenBackdrop(false)}
       >
+        {/* <Backdrop open={true}> */}
          {step === 0  && 
-          <div onClick={() => {setTimeout(()=>{setOpenBackdrop(true)},10) }} style={{width:"400px", height:"700px", position:"absolute", backgroundColor:"white", overflow:"scroll", padding: "10px"}}>
+          <div style={{width:"400px", height:"700px",backgroundColor:"white", overflow:"scroll", padding: "10px"}}>
             <Article data={postValues} teamName={team_id} id={file_id} type="programs" mode="preview" />
           </div>
         }
@@ -509,7 +605,54 @@ const EditProgram = () => {
             <Form formDatas={postValues.formData} data={[]} handleData={()=>{}} addMargin={true} />
           </div>
         }
-      </Backdrop>
+        {/* </Backdrop> */}
+      </Dialog>
+
+
+      <Dialog
+        // sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openScheduleBackdrop==="editColor"}
+        onClose={()=>setOpenScheduleBackdrop("")}
+      >
+        <div style={{backgroundColor:"white", padding: "20px 30px", borderRadius:"4px"}}>
+          <h1>색깔에 따른 타입 지정</h1>
+          <p style={{fontSize:"13px", marginTop:"3px"}}>{`*모든 "프로그램 스케쥴"에 동일적용됩니다.`}</p>
+          <div className={styles.color_container}>
+            <div className={`${styles.dot} ${styles.red}`} />
+            <p>빨강: </p>
+            <TextField variant="standard" value={colorInput.red} onChange={(e)=>onColorValueChange("red",e.target.value)}/>
+          </div>
+          <div className={styles.color_container}>
+            <div className={`${styles.dot} ${styles.yellow}`} />
+            <p>노랑: </p>
+            <TextField variant="standard" value={colorInput.yellow} onChange={(e)=>onColorValueChange("yellow",e.target.value)}/>
+          </div>
+          <div className={styles.color_container}>
+            <div className={`${styles.dot} ${styles.green}`} />
+            <p>초록: </p>
+            <TextField variant="standard" value={colorInput.green} onChange={(e)=>onColorValueChange("green",e.target.value)}/>
+          </div>
+          <div className={styles.color_container}>
+            <div className={`${styles.dot} ${styles.blue}`} />
+            <p>파랑: </p>
+            <TextField variant="standard" value={colorInput.blue} onChange={(e)=>onColorValueChange("blue",e.target.value)}/>
+          </div>
+          <div className={styles.color_container}>
+            <div className={`${styles.dot} ${styles.purple}`} />
+            <p>보라: </p>
+            <TextField variant="standard" value={colorInput.purple} onChange={(e)=>onColorValueChange("purple",e.target.value)}/>
+          </div>
+          <Button variant="contained" size="small" onClick={onColorSubmit} fullWidth sx={{mt:"20px"}}>저 장</Button>
+        </div>
+      </Dialog>
+
+      <Dialog
+        // sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openScheduleBackdrop==="addSchedule"}
+        onClose={()=>setOpenScheduleBackdrop("")}
+      >
+        
+      </Dialog>
     </>
   )
 }

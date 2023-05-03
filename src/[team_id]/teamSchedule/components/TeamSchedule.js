@@ -75,7 +75,7 @@ const TeamSchedule = () => {
         <p style={{marginLeft:"10px", fontSize:"12px"}}>*저장을 눌러야 변경사항들이 적용됩니다.</p>
       </div>
 
-
+{/* 
       <ul className={styles.color_container}>
         
         {calendar?.colorValues?.red &&
@@ -108,10 +108,10 @@ const TeamSchedule = () => {
             <p className={`${styles.color_text} ${styles.purple}`} >{calendar.colorValues.purple}</p>
           </li>
         }
+      </ul> */}
 
 
-      </ul>
-      <Calendar events={calendar.data} setEvents={setCalendar} editable={true}/>   
+      <Calendar events={calendar} setEvents={setCalendar} editable={true}/>   
     </div>
   )
 }

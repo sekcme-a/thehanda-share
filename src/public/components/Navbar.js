@@ -132,6 +132,14 @@ const Navbar = () => {
           </ListItemButton>
         </List>
         <List component="div" disablePadding>
+          <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("programSchedule")}>
+            <ListItemIcon>
+              <CalendarMonthOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="프로그램 스케쥴" />
+          </ListItemButton>
+        </List>
+        <List component="div" disablePadding>
           <ListItemButton sx={{ pl: 4 }}  onClick={()=>onClick("program")}>
             <ListItemIcon>
               <EditRoundedIcon />
