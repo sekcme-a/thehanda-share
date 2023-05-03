@@ -48,10 +48,12 @@ const EcommerceTotalSalesRadial = ({data}) => {
   return (
     <Card>
       <CardContent>
-        <Typography variant='h6' sx={{ mb: 1, textAlign:"center"}}>
+        <Typography variant='h6' sx={{ mb: 1, textAlign:"center", wordBreak:"keep-all", fontSize:"15px"}}>
           {data.title}
         </Typography>
+        <div style={{display:"flex", justifyContent:"center"}}>
         <ReactApexcharts type='radialBar' height={103} options={options} series={[data.percentage]} />
+        </div>
         <Typography variant='body2' sx={{ mt: 3.5, fontWeight: 600, textAlign: 'center', color: 'text.primary' }}>
           {data.subtitle}
         </Typography>

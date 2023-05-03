@@ -17,7 +17,7 @@ import { Button } from "@mui/material"
 
 const Comments = ({uid}) => {
   const router = useRouter()
-  const { userData, teamId } = useData()
+  const { userData, teamId, user } = useData()
   const [inputRate, setInputRate] = useState(5)
   const [inputComment, setInputComment] = useState("")
   const [triggerReload, setTriggerReload] = useState(true)
@@ -55,27 +55,37 @@ const Comments = ({uid}) => {
         if(doc.data().hasPart)
           hasPart = doc.data().hasPart
 
+        let percent = (hasPart/(hasPart+hasNotPart)*100).toFixed(1)
+
+        if(typeof percent === "string")
+          percent = 0
+
         setPercentageData({
             ...percentageData,
             title:`프로그램 중 ${hasPart}개 참여, ${hasNotPart}개 미참여`,
-            percentage: (hasPart/(hasPart+hasNotPart)*100).toFixed(1)
+            percentage: percent
         })
       }
-      if(doc.exists && doc.data().rate && doc.data().rateCount){
-        setRateData({
-            ...rateData,
-            title:`총 ${doc.data().rateCount}개의 평가`,
-            percentage: (doc.data().rate*20).toFixed(1)
-        })
-      }
-      console.log(doc.exists)
       let tempComments = []
       if(doc.exists){
         db.collection("team_admin").doc(teamId).collection("users").doc(uid).collection("comment").orderBy("createdAt","desc").get().then((query)=>{
             query.forEach((item)=>{
-                tempComments.push(item.data())
+                tempComments.push({...item.data(), docId: item.id })
             })
             setComments([...tempComments])
+
+            //get rate
+            let totalRate = 0
+            for(let i = 0; i<tempComments.length; i++){
+              totalRate = totalRate+tempComments[i].rate
+            }
+            console.log(tempComments)
+            const rate = (totalRate/(tempComments.length)*20).toFixed(1)
+            setRateData({
+              ...rateData,
+                title:`총 ${tempComments.length}개의 평가`,
+                percentage: rate
+            })
         })
       }
     }
@@ -86,31 +96,27 @@ const Comments = ({uid}) => {
     if(inputComment==="" || inputComment===" "){
         alert("메모는 빈칸일 수 없습니다.")
     } else{
-      db.collection("team_admin").doc(teamId).collection("users").doc(uid).get().then((doc)=>{
-            if(doc.exists && doc.data().rateCount && doc.data().rate){
-              db.collection("team_admin").doc(teamId).collection("users").doc(uid).update({
-                    rateCount : doc.data().rateCount+1,
-                    rate: (doc.data().rate*doc.data().rateCount+inputRate)/(doc.data().rateCount+1)
-                })
-            }else{
-              db.collection("team_admin").doc(teamId).collection("users").doc(uid).set({
-                    rateCount: 1,
-                    rate: inputRate
-                })
-            }
-        })
-        await db.collection("team_admin").doc(teamId).collection("users").doc(uid).collection("comment").add({
-            author: userData.displayName,
-            createdAt: new Date(),
-            text: inputComment,
-            rate: inputRate
-        })
-        setInputComment("")
-        setInputRate("")
-        setTimeout(()=>{
+      await db.collection("team_admin").doc(teamId).collection("users").doc(uid).collection("comment").add({
+        author: userData.displayName,
+        createdAt: new Date(),
+        text: inputComment,
+        rate: inputRate,
+        authorUid: user.uid
+      })
+      setInputComment("")
+      setInputRate("")
+      setTimeout(()=>{
 
-        },500)
-        setTriggerReload(!triggerReload)
+      },500)
+      setTriggerReload(!triggerReload)
+    }
+  }
+
+  const onDeleteClick = async (docId) => {
+    if(confirm("해당 평가를 삭제하시겠습니까?")){
+      await db.collection("team_admin").doc(teamId).collection("users").doc(uid).collection("comment").doc(docId).delete()
+      alert("삭제되었습니다")
+      setTriggerReload(!triggerReload)
     }
   }
   return (
@@ -133,7 +139,18 @@ const Comments = ({uid}) => {
                             size="small"
                         />
                         <h1>
-                            {`작성자: ${comment.author}`}
+                          {`${comment.createdAt.toDate().toLocaleString('ko-KR').replace(/\s/g, '')} `}
+                          &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                          {`작성자: ${comment.author}`}
+                          {comment.authorUid === user.uid &&
+                            <div className={styles.delete_button} onClick={()=>onDeleteClick(comment.docId)}>삭제</div>
+                          }
+                        </h1>
+                        <h1>
+                            
+                        </h1>
+                        <h1>
+                            
                         </h1>
                         <h2>
                             {comment.text}

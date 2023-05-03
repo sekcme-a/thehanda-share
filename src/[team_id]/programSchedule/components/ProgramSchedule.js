@@ -45,7 +45,7 @@ const TeamSchedule = () => {
         const querySnapshot = await db.collection("team").doc(teamId).collection("programs").where("programStartDate", ">", new Date(date)).where("condition", "==","confirm").get()
         const fetchedData = []
         querySnapshot.docs.map((doc) => {
-          if(doc.data().calendar){
+          if(doc.exists && doc.data().calendar){
             let tempCal = doc.data().calendar
             // tempCal = [...doc.data().calendar, ["extendedProps"]:{...doc.data().calendar.extendedProps, programId: doc.id} ]
             for (let i = 0; i < tempCal.length; i++) {
@@ -60,14 +60,6 @@ const TeamSchedule = () => {
           console.log(fetchedData)
           setProgramSchedule({colorValues: colorValues, data: fetchedData})
         }
-        // const fetchedData = querySnapshot.docs.map((doc) => {
-        //   if(doc.data().calendar)
-        //     return doc.data().calendar
-        // }).filter(Boolean)
-        // if(fetchedData){
-        //   console.log(fetchedData)
-        //   setProgramSchedule({colorValues: colorValues, data: fetchedData})
-        // }
       }
     }
     fetchData()

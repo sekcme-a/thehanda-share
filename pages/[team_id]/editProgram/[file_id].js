@@ -249,7 +249,7 @@ const EditProgram = () => {
         savedAt: new Date(),
         lastSaved: userData.displayName,
         selectedAlarmType: selectedAlarmType,
-        calendar: calendar.data
+        calendar: calendar.data,
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })

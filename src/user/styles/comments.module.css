@@ -37,7 +37,15 @@
 }
 .comment_container h1{
     font-size: 11px;
+    display: flex;
 }
 .comment_container h2{
     font-size: 15px;
+    margin-top: 4px;
+}
+
+.delete_button{
+    color: rgb(182,0,0);
+    margin-left: 10px;
+    cursor: pointer;
 }

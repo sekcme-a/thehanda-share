@@ -136,9 +136,9 @@ const EditProgram = () => {
     }
 
     
-    let location = sessionStorage.getItem("prevSurveyLocId").split("/")
+    let location = sessionStorage.getItem("prevSurveyLocId")?.split("/")
     //현재 위치가 루트폴더가 아니라면 폴더들을 탐색해 현재 위치가 존재하는지 확인해야함
-    if(location.length>1){
+    if(location?.length>1){
       const folderLocationDoc = await db.collection("team_admin").doc(team_id).collection("folders").doc(location[location.length-1]).get()
       if(!folderLocationDoc.exists){
         location = ["survey"]
@@ -160,7 +160,6 @@ const EditProgram = () => {
         history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
-        location: location[location.length-1]
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })

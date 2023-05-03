@@ -150,9 +150,9 @@ const EditAnouncement = () => {
     }
 
     
-    let location = sessionStorage.getItem("prevAnouncementLocId").split("/")
+    let location = sessionStorage.getItem("prevAnouncementLocId")?.split("/")
     //현재 위치가 루트폴더가 아니라면 폴더들을 탐색해 현재 위치가 존재하는지 확인해야함
-    if(location.length>1){
+    if(location?.length>1){
     //해당 프로그램을 저장하려는 location경로가 없는 경로라면(해당 프로그램을 편집할때 다른 유저가 해당 폴더를 삭제한 경우 보완) 루트위치에 저장.
       const folderLocationDoc = await db.collection("team_admin").doc(team_id).collection("folders").doc(location[location.length-1]).get()
       if(!folderLocationDoc.exists){
@@ -176,7 +176,6 @@ const EditAnouncement = () => {
         history: [{type:"submit", date: new Date(), text:`"${userData.displayName}" 님에 의해 저장됨.`},...postValues.history],
         savedAt: new Date(),
         lastSaved: userData.displayName,
-        location: location[location.length-1]
       }).then(()=>{
         alert("성공적으로 저장되었습니다!")
       })
