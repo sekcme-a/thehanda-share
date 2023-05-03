@@ -68,6 +68,7 @@ const EditProgram = () => {
     hasLimit: false,
     limit: "0",
     hasSchedule: false,
+    submitCount: 0,
   })
   const [sections, setSections] = useState([])
   const [rejectText, setRejectText] = useState("")
