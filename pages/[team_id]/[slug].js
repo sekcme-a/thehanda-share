@@ -67,6 +67,7 @@ const Index = () => {
                 type: slug,
                 teamId: team_id,
             })
+            
         }
     },[slug])
 

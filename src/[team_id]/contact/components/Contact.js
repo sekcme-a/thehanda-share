@@ -212,13 +212,13 @@ const Contact = () => {
                 {!sortedData[selectedIndex]?.show ? 
                   <Tooltip title="모두 공개">
                     <IconButton onClick={onShowClick}>
-                      <VisibilityOutlinedIcon style={{fontSize:"20px", cursor:"pointer"}} />
+                      <VisibilityOffOutlinedIcon style={{fontSize:"20px", cursor:"pointer"}} />
                     </IconButton>
                   </Tooltip>
                   :
                   <Tooltip title="비공개">
                     <IconButton onClick={onHideClick}>
-                      <VisibilityOffOutlinedIcon style={{fontSize:"20px", cursor:"pointer"}} />
+                      <VisibilityOutlinedIcon style={{fontSize:"20px", cursor:"pointer"}} />
                     </IconButton>
                   </Tooltip>
                 }

@@ -201,6 +201,7 @@ const EditAnouncement = () => {
         condition: "waitingForConfirm"
       }).then(()=>{
         alert("성공적으로 승인신청되었습니다.")
+        router.reload()
       })
     } else{
       alert("저장한 후 승인신청해주세요.")
