@@ -1,9 +1,0 @@
-.user_container{
-  display: flex;
-  align-items: center;
-  margin-top: 5px;
-  cursor: pointer;
-}
-.user_container p{
-  margin-left: 10px;
-}
