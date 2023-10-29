@@ -223,3 +223,23 @@ a {
 }
 
 
+
+
+.css-v4u5dn-MuiInputBase-root-MuiInput-root{
+  border-bottom: 1px solid white;
+}
+.css-v4u5dn-MuiInputBase-root-MuiInput-root:after{
+  border-bottom: 1px solid white;
+}
+
+
+.css-2xg2e2-MuiInputBase-root-MuiInput-root{
+  border-bottom: 1px solid white;
+}
+.css-2xg2e2-MuiInputBase-root-MuiInput-root:after{
+  border-bottom: 1px solid white;
+}
+
+.css-1wuzo6d-MuiInputBase-input-MuiInput-input{
+  color: white;
+}

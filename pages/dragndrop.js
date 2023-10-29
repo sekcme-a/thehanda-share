@@ -37,12 +37,26 @@ const Dragndrop = () => {
       const rect = element?.getBoundingClientRect();
       const x = rect.left + window.scrollX; // 요소의 왼쪽 가장자리 x 좌표
       const y = rect.top + window.scrollY; // 요소의 상단 가장자리 y 좌표
-      setFolderX({min: x, max: x+folderRef.current.offsetWidth})
-      setFolderY({min:y, max: y+folderRef.current.offsetHeight})
+      if(folderRef.current.offsetWidth>280 && folderRef.current.offsetHeight>200){
+        setFolderX({min: x, max: x+folderRef.current.offsetWidth})
+        setFolderY({min:y, max: y+folderRef.current.offsetHeight})
+      }
+      else{
+        setFolderX({min: x, max: x+288})
+        setFolderY({min: y, max: y+209})
+      }
       console.log(x,x+folderRef.current.offsetWidth)
       console.log(y,y+folderRef.current.offsetHeight)
     }
   },[folderRef])
+  useEffect(()=>{
+    if(folderX.max-folderX.min<150){
+      setFolderX({min: folderX.min, max: folderX.min+288})
+    }
+    if(folderY.max-folderY.min<150){
+      setFolderY({min: folderY.min, max: folderY.min+209})
+    }
+  },[folderX, folderY])
   const handleOnDrag = (data,id) => {
     setIsDragging(id);
       let element = ""

@@ -34,7 +34,6 @@ const Letsgo = () => {
           options={{
             delay: 50
           }}
-          
         />
         </h1>
         {!isHide && <p style={{position:"absolute", bottom:"50px", width:"100vw", textAlign:"center" }}>아무 곳이나 클릭하세요.</p>}
