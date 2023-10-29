@@ -12,7 +12,7 @@
   border: 8px solid black;
   border-radius: 30px;
   position: relative;
-
+  background-color: white;
 }
 
 .sound_container{
