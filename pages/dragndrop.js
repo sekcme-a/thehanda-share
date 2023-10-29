@@ -206,6 +206,7 @@ const Dragndrop = () => {
           setIsTalkEnd={setTalkEnd} pauseFor={50} delay={10}
         />
       }
+      <div style={{position:"absolute", bottom:"20px", right:"20px", cursor:"pointer"}} onClick={()=>router.push("/text/gotoResult")}>{`드래그가 되지 않는다면 클릭해주세요.>`}</div>
     </div>
   )
 }

@@ -243,3 +243,10 @@ a {
 .css-1wuzo6d-MuiInputBase-input-MuiInput-input{
   color: white;
 }
+
+.css-1wuzo6d-MuiInputBase-input-MuiInput-input{
+  color:white !important;
+}
+#multi{
+  color: white !important;
+}
