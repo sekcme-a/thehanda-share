@@ -82,17 +82,17 @@ const Letsgo = () => {
               <motion.div style={{display:"flex", flex: "1 1 0", justifyContent:"center", alignItems:"center"}}
                 initial={{opacity: 0}} animate={{opacity:1, transition:{duration: 1, delay: IMG_DELAY*3}}}
               >
-                <img src="/images/debate/001.JPG " style={{width:"90%",height:"90%"}} alt="회의"/>
+                <img src="/images/debate/004.JPG " style={{width:"90%",height:"90%"}} alt="회의"/>
               </motion.div>
               <motion.div style={{display:"flex", flex: "1 1 0", justifyContent:"center", alignItems:"center"}}
                 initial={{opacity: 0}} animate={{opacity:1, transition:{duration: 1, delay: IMG_DELAY*4}}}
               >
-                <img src="/images/debate/002.JPG " style={{width:"90%",height:"90%"}} alt="회의"/>
+                <img src="/images/debate/005.JPG " style={{width:"90%",height:"90%"}} alt="회의"/>
               </motion.div>
               <motion.div style={{display:"flex", flex: "1 1 0", justifyContent:"center", alignItems:"center"}}
                 initial={{opacity: 0}} animate={{opacity:1, transition:{duration: 1, delay: IMG_DELAY*5}}}
               >
-                <img src="/images/debate/003.JPG " style={{width:"90%",height:"90%"}} alt="회의"/>
+                <img src="/images/debate/006.JPG " style={{width:"90%",height:"90%"}} alt="회의"/>
               </motion.div>
             </div>
           </div>

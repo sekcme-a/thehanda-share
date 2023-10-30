@@ -26,6 +26,7 @@ const Dragndrop = () => {
   const [isIn, setIsIn] = useState(false)
   const [inList, setInList] = useState([])
   const [talkEnd, setTalkEnd] = useState(false)
+  const [isImgLoaded, setIsImgLoaded] = useState(false)
   
   // const itemRef1 = useRef()
 
@@ -48,7 +49,7 @@ const Dragndrop = () => {
       console.log(x,x+folderRef.current.offsetWidth)
       console.log(y,y+folderRef.current.offsetHeight)
     }
-  },[folderRef])
+  },[folderRef, isImgLoaded])
   useEffect(()=>{
     if(folderX.max-folderX.min<150){
       setFolderX({min: folderX.min, max: folderX.min+288})
@@ -118,7 +119,12 @@ const Dragndrop = () => {
       <div className={styles.body_container}>
         <div className={styles.left_container}  >
           <div className={styles.folder_container}>
-            <div  ref={folderRef}>{isIn ? <img src="/images/folder.png" alt="폴더" /> : <img src="/images/folder_black.png" alt="폴더" />}</div>
+            <div  ref={folderRef}>
+              {isIn ?
+                <img src="/images/folder.png" alt="폴더" />
+                :
+                <img src="/images/folder_black.png" alt="폴더" onLoad={()=>setIsImgLoaded(true)}/>}
+              </div>
             <h1>이력서에 넣을 것들을 여기로 드래그하세요!</h1>
           </div>
         </div>

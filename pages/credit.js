@@ -103,7 +103,7 @@ const Credit = () => {
               sx={{input: {color:"white"},}}
               multiline
               fullWidth
-              maxRows={6}
+              maxRows={4}
               id="multi"
             />
             <p>내용을 입력해주세요. 최대 200자</p>
@@ -143,7 +143,19 @@ const Credit = () => {
         <div className={styles.board_bottom} />
         <div className={styles.people_container}>
           <img src="/images/credit.png" alt="만든이들"/>
-          <h1 onClick={()=>router.push("/")}>{`<      처음으로`}</h1>
+        </div>
+        <div className={styles.goHome_container}>
+          <h1 onClick={()=>router.push("/")} className={styles.toHome}>{`<      처음으로`}</h1>
+        </div>
+
+        <div className={styles.article_container}>
+          <h1>관련기사</h1>
+          <a target="_blank" href="https://www.kmcn.kr/news/article.html?no=4912" rel="noreferrer"><p>{`[기획취재] 수원시다문화가족지원센터, 다문화 경제 자립 프로그램 현황 탐사`}</p></a>
+          <a target="_blank" href="https://www.kmcn.kr/news/article.html?no=4456" rel="noreferrer"><p>{`[기획취재] 복지전문기관과 취업전문기관 그리고 다문화, 부산해운대구 다문화가족지원센터 취업프로그램 현장 연계`}</p></a>
+          <a target="_blank" href="https://www.kmcn.kr/news/article.html?no=4913" rel="noreferrer"><p>{`[기획취재] 태국과 한국 이민자의 경제자립을 위한 시간과 선택`}</p></a>
+          <a target="_blank" href="https://www.kmcn.kr/news/article.html?no=4908" rel="noreferrer"><p>{`[기획취재] 제주도 서귀포시가족센터, 결혼이민자 경제자립 프로그램`}</p></a>
+          <a target="_blank" href="https://www.kmcn.kr/news/article.html?no=4909" rel="noreferrer"><p>{`[기획 토론회] 다문화 경제적 자립 프로그램 현장 연계 현황과 나아갈 방향`}</p></a>
+          <a target="_blank" href="https://www.kmcn.kr/news/article.html?no=4914" rel="noreferrer"><p>{`[기획취재] 솔롱고스 한국, 몽골 이주의 과거와 현재`}</p></a>
         </div>
         <h1 className={styles.special_thanks}>
         본 기획물은 정부광고 수수료로 조성된 언론진흥기금의 지원을 받았습니다.
