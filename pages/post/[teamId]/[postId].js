@@ -9,7 +9,7 @@ import { useRouter } from "next/router"
 import PostSkeleton from "src/post/[teamId]/[postId]/PostSkeleton"
 import { getDate } from "src/public/functions/getDate"
 
-import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
+import LanguageIcon from '@mui/icons-material/Language';
 
 import DeepLink from "src/post/[teamId]/[postId]/DeepLink"
 
@@ -111,7 +111,7 @@ const Post = () => {
                     <div className={styles.website_button}>
                       <a href={item.text} target="_blank" rel="noreferrer">
                         <div className={styles.icon} >
-                          <LanguageRoundedIcon style={{color:"#7232d9", fontSize:"40px"}}/>
+                          <LanguageIcon style={{color:"#7232d9", fontSize:"40px"}}/>
                         </div>
                         <p className={styles.icon_text}>{item.title}</p>
                       </a>
