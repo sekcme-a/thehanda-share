@@ -1,0 +1,38 @@
+
+.main{
+  width: 100%;
+  padding-bottom: 100px;
+}
+
+.thumbnail{
+  width: 100%;
+
+}
+
+.content{
+  padding: 10px 13px;
+  line-height: 1.2;
+}
+.like_button{
+  width: 22px;
+  margin-right: 10px;
+}
+
+
+.title{
+  font-size: 18px;
+  word-break: keep-all;
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+.text{
+  margin-top: 15px;
+  white-space: pre-line;
+  font-size: 15px;
+}
+
+.date{
+  font-size: 13px;
+  margin-top: 12px;
+}

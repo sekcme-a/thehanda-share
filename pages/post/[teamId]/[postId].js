@@ -11,8 +11,7 @@ import { getDate } from "src/public/functions/getDate"
 
 import LanguageIcon from '@mui/icons-material/Language';
 
-import DeepLink from "src/post/[teamId]/[postId]/DeepLink"
-
+import DeepLink from "src/public/components/DeepLink";
 
 const Post = () => {
   const router = useRouter()
@@ -124,7 +123,7 @@ const Post = () => {
         }
       </div>
 
-      <DeepLink {...{teamId, postId, postType}} />
+      <DeepLink url={`com.zzsoft.thehanda://post/${teamId}/${postId}/${postType}`} />
         
 
     </div>

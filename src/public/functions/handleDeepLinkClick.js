@@ -1,4 +1,5 @@
-
+// exp://172.30.1.11:19000/--/post/miraero/YUROmFV3sOatJeHloYt9/program`,
+// com.zzsoft.thehanda://post/miraero/YUROmFV3sOatJeHloYt9/program`,
 
 export const DEEPLINK = {
 
