@@ -1,7 +1,5 @@
 import styles from "src/story/[teamId]/styles.module.css"
 
-
-
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Scrollbar, Autoplay, Pagination } from 'swiper/modules';
 import SwiperCore from 'swiper';
@@ -12,6 +10,7 @@ import { firestore as db } from "firebase/firebase";
 import { dateFromNow, getDate } from "src/public/functions/getDate";
 import { DEEPLINK } from "src/public/functions/handleDeepLinkClick";
 import DeepLink from "src/public/components/DeepLink";
+import { CircularProgress } from "@mui/material";
 
 SwiperCore.use([Navigation, Scrollbar, Autoplay,Pagination]);
 
@@ -23,12 +22,16 @@ const Story = () => {
 
   const [data, setData] = useState(null)
 
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(()=> {
     const fetchData = async () => {
+      setIsLoading(true)
       const doc = await db.collection("team").doc(teamId).collection("story").doc(storyId).get()
       if(doc.exists && doc.data().condition==="게재중"){
         setData({...doc.data(), id: doc.id})
       }
+      setIsLoading(false)
     }
     fetchData()
   },[teamId, storyId])
@@ -40,6 +43,13 @@ const Story = () => {
   }
 
 
+  if(isLoading) return (<CircularProgress />)
+
+  else if(!data) return(
+    <div className={styles.main}>
+      <p className={styles.text_no_data}>해당 게시물이 삭제되었거나 존재하지 않습니다.</p>
+    </div>
+  )
   return(
     <div className={styles.main}>
       
