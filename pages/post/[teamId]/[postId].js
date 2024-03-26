@@ -29,7 +29,7 @@ const Post = () => {
       setIsLoading(true)
       const programDoc = await db.collection("team").doc(teamId).collection("programs").doc(postId).get()
       if(programDoc.exists){
-        setData({id: programDoc.id, ...programDoc.data(), quickLink: [...programDoc.data().quickLink,...programDoc.data().quickLink,...programDoc.data().quickLink,...programDoc.data().quickLink,...programDoc.data().quickLink,...programDoc.data().quickLink,...programDoc.data().quickLink,]})
+        setData({id: programDoc.id, ...programDoc.data(), quickLink: [...programDoc.data().quickLink]})
         console.log(programDoc.data())
       } else {
         const surveyDoc = await db.collection("team").doc(teamId).collection("surveys").doc(postId).get()
@@ -104,19 +104,22 @@ const Post = () => {
                 rowSpacing={2}
                 columnSpacing={1}
               >
-                {data.quickLink.map((item, index) => (
-                  <Grid item xs={3} key={index}
-                  >
-                    <div className={styles.website_button}>
-                      <a href={item.text} target="_blank" rel="noreferrer">
-                        <div className={styles.icon} >
-                          <LanguageIcon style={{color:"#7232d9", fontSize:"40px"}}/>
+                {data.quickLink.map((item, index) => {
+                  if(item.title !=="" && item.text !==""){
+                    return(
+                      <Grid item xs={3} key={index}>
+                        <div className={styles.website_button}>
+                          <a href={item.text} target="_blank" rel="noreferrer">
+                            <div className={styles.icon} >
+                              <LanguageIcon style={{color:"#7232d9", fontSize:"40px"}}/>
+                            </div>
+                            <p className={styles.icon_text}>{item.title}</p>
+                          </a>
                         </div>
-                        <p className={styles.icon_text}>{item.title}</p>
-                      </a>
-                    </div>
-                  </Grid>
-                ))}
+                      </Grid>
+                    )
+                  }
+                  })}
               </Grid>
             </div>
           </div>

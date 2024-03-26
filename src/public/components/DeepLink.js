@@ -27,7 +27,7 @@ const DeepLink = ({url}) => {
 
   return(
     <div className={styles.main}>
-      <p>아래 버튼을 클릭해 더한다 앱에서 모든 콘텐츠를 확인해보세요.</p>
+      <p>아래 버튼을 클릭해 모든 콘텐츠를 확인해보세요.</p>
       <LinkButton
         variant="contained"
         fullWidth

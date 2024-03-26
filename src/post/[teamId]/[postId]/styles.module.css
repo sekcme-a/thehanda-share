@@ -54,7 +54,7 @@
 
 .info_container{
   margin-top: 30px;
-  margin-bottom: 60px;
+  margin-bottom: 150px;
 }
 .info_item{
   padding: 30px 15px;
@@ -68,6 +68,7 @@
 .info_content{
   font-size: 15px;
   margin-top: 15px;
+  white-space: pre-line;
 }
 
 
